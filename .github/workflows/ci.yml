@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate route tree
+        run: npm run generate-routes
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run check
+
+      - name: Build
+        # Placeholders only. The build must not reach a real database or the
+        # Anthropic API, but the env contract in src/env.ts still has to pass.
+        env:
+          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
+          BETTER_AUTH_SECRET: ci-placeholder-secret-at-least-32-chars
+          BETTER_AUTH_URL: http://localhost:3000
+        run: npm run build
