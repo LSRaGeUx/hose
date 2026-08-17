@@ -1,0 +1,33 @@
+# Local Postgres for development.
+#
+# The credentials below are deliberately committed. This container binds to
+# localhost only and holds nothing but disposable dev data, so they are
+# configuration, not secrets. Production credentials live in Netlify's
+# environment and never enter the repository.
+#
+#   podman compose up -d      (or: npm run db:up)
+#   podman compose down       (or: npm run db:down)
+#   podman compose down -v    to also drop the volume and start clean
+
+services:
+  postgres:
+    image: docker.io/library/postgres:17-alpine
+    container_name: hose-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hose
+      POSTGRES_PASSWORD: hose
+      POSTGRES_DB: hose
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - hose-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hose -d hose']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  hose-pgdata:
