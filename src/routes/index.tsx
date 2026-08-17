@@ -1,13 +1,43 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
+
+import { Button } from '#/components/ui/button'
 
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
+  const { user } = Route.useRouteContext()
+
   return (
-    <div className="p-8">
-      <h1 className="text-4xl font-bold">Welcome to TanStack Start</h1>
-      <p className="mt-4 text-lg">
-        Edit <code>src/routes/index.tsx</code> to get started.
+    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-24">
+      <div className="flex flex-col gap-4">
+        <h1 className="text-4xl font-semibold tracking-tight text-balance">
+          Challenge ta problématique
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Cinq fois « pourquoi ? », et ton idée floue devient trois verbes
+          d’action avec, pour chacun, une piste concrète.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {user ? (
+          <Button asChild>
+            <Link to="/mon-compte">Reprendre où j’en étais</Link>
+          </Button>
+        ) : (
+          <>
+            <Button asChild>
+              <Link to="/inscription">Commencer</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/connexion">J’ai déjà un compte</Link>
+            </Button>
+          </>
+        )}
+      </div>
+
+      <p className="text-muted-foreground text-sm">
+        Le questionnement arrive à la prochaine étape.
       </p>
     </div>
   )
