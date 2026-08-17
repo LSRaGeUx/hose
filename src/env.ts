@@ -19,8 +19,19 @@ export const env = createEnv({
     /** Public origin the auth callbacks resolve against. */
     BETTER_AUTH_URL: z.string().url(),
 
-    /** Anthropic key for the five-whys engine. Added in phase 4. */
-    ANTHROPIC_API_KEY: z.string().startsWith('sk-ant-').optional(),
+    /**
+     * Anthropic credential for the five-whys engine. Used from phase 4.
+     *
+     * Deliberately not format-checked. Netlify's Vite plugin injects its own
+     * ANTHROPIC_API_KEY into dev and deploys: a short-lived, site-scoped JWT
+     * for their AI Gateway, not an `sk-ant-` key. A prefix check rejects it and
+     * breaks the whole app, which is exactly what happened here.
+     *
+     * Phase 4 has to decide explicitly whether to call Anthropic directly with
+     * our own key or go through Netlify's gateway, rather than letting whatever
+     * happens to be in the environment pick for us.
+     */
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
   },
 
   /**
