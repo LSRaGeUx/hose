@@ -7,13 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card'
+import { fetchMyProblems } from '#/lib/problems'
+
+import type { ProblemSummary } from '#/lib/problems'
 
 export const Route = createFileRoute('/_authed/mon-compte')({
+  loader: () => fetchMyProblems(),
   component: Account,
+})
+
+const dateFormat = new Intl.DateTimeFormat('fr-FR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
 })
 
 function Account() {
   const { user } = Route.useRouteContext()
+  const problems = Route.useLoaderData()
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12">
@@ -27,9 +38,6 @@ function Account() {
       <Card>
         <CardHeader>
           <CardTitle>Informations</CardTitle>
-          <CardDescription>
-            La modification du profil arrive avec la gestion de l’avatar.
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <dl className="grid gap-4 sm:grid-cols-2">
@@ -45,19 +53,73 @@ function Account() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Mes problématiques</CardTitle>
-          <CardDescription>
-            L’historique de tes cheminements apparaîtra ici.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Rien pour le moment. Lance une première réflexion depuis l’accueil.
+      <section className="flex flex-col gap-4">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Mes problématiques
+          </h2>
+          <p className="text-muted-foreground text-sm tabular-nums">
+            {problems.length}{' '}
+            {problems.length > 1 ? 'problématiques' : 'problématique'}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+
+        {problems.length === 0 ? (
+          <Card>
+            <CardContent className="text-muted-foreground py-8 text-center text-sm">
+              Rien pour le moment. Lance une première réflexion depuis
+              l’accueil.
+            </CardContent>
+          </Card>
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {problems.map((problem) => (
+              <li key={problem.id}>
+                <ProblemCard problem={problem} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
+  )
+}
+
+function ProblemCard({ problem }: { problem: ProblemSummary }) {
+  const complete = problem.answeredCount === problem.totalCount
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base leading-snug text-balance">
+          {problem.title}
+        </CardTitle>
+        <CardDescription>
+          {dateFormat.format(new Date(problem.createdAt))}
+          {' · '}
+          <span className="tabular-nums">
+            {problem.answeredCount}/{problem.totalCount}
+          </span>{' '}
+          {complete ? 'réponses' : 'réponses, en cours'}
+        </CardDescription>
+      </CardHeader>
+
+      {problem.verbs.length > 0 ? (
+        <CardContent>
+          <ol className="flex flex-col gap-3">
+            {problem.verbs.map((verb) => (
+              <li key={verb.label} className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium lowercase">
+                  {verb.label}
+                </span>
+                <span className="text-muted-foreground text-sm">
+                  {verb.solution}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </CardContent>
+      ) : null}
+    </Card>
   )
 }
