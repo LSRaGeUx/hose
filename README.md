@@ -117,8 +117,12 @@ npm run dev
 Le compte de démo est `test@hose.local` / `hose-dev-password`.
 
 La seule clé nécessaire à la fonctionnalité principale est
-`HOSE_ANTHROPIC_API_KEY`. Le formulaire de contact reste désactivé sans ses
-clés Resend, et le dit au lieu de faire semblant d'envoyer.
+`HOSE_ANTHROPIC_API_KEY`, et elle est optionnelle. Sans elle l’app démarre
+quand même, la connexion fonctionne et toutes les pages s’affichent : le
+formulaire de départ est désactivé et annonce que l’assistant est coupé, au
+lieu d’accepter une problématique et d’échouer à l’envoi. Le formulaire de
+contact se dégrade de la même façon sans ses clés Resend, et le dit au lieu de
+faire semblant d’envoyer.
 
 ### Pourquoi `HOSE_ANTHROPIC_API_KEY` et pas `ANTHROPIC_API_KEY`
 
@@ -157,6 +161,13 @@ fait partie du `WHERE`, donc la problématique d'un autre utilisateur n'est pas
 trouvée, plutôt que trouvée puis refusée. Les gardes de route s'exécutent dans
 `beforeLoad`, donc une requête déconnectée est redirigée avant qu'aucun markup
 ne soit produit.
+
+**Une configuration absente est un état, pas un plantage.** La clé Claude comme
+les clés Resend sont optionnelles dans le contrat d’environnement, et l’app est
+faite pour tourner sans l’une ni l’autre. Le credential est classé dans un seul
+module sans imports, lu à la fois par le bundle navigateur et par le moteur,
+donc l’état désactivé du formulaire et le refus côté serveur ne peuvent pas
+diverger sur l’utilisabilité de la clé.
 
 **Un parcours est enregistré en une seule transaction, et seulement une fois
 complet.** Une conversation abandonnée ne laisse rien derrière elle, et un

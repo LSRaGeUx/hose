@@ -11,7 +11,7 @@ const STEPS = [
 ] as const
 
 function Home() {
-  const { user } = Route.useRouteContext()
+  const { user, ai } = Route.useRouteContext()
   const navigate = useNavigate()
 
   return (
@@ -32,6 +32,7 @@ function Home() {
             it. Signed out works the same: /reflexion's guard carries the whole
             path to sign-in and back, so the problem survives the detour. */}
         <StartForm
+          disabledReason={ai.message}
           onStart={(probleme, mode) =>
             navigate({ to: '/reflexion', search: { probleme, mode } })
           }

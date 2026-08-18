@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { Alert, AlertDescription } from '#/components/ui/alert'
 import { Button } from '#/components/ui/button'
 import { Textarea } from '#/components/ui/textarea'
+import { isDisabledMessage } from '#/lib/ai/availability'
 import {
   generateChain,
   nextQuestion,
@@ -38,15 +39,21 @@ function errorMessage(error: unknown): string {
   // findable, so it goes to the console rather than being swallowed.
   console.error('[reflexion]', error)
 
-  // RefusedError's message is already written for the user, in French.
-  if (error instanceof Error && error.message.includes('refus')) {
-    return error.message
+  if (error instanceof Error) {
+    // RefusedError's message is already written for the user, in French.
+    if (error.message.includes('refus')) return error.message
+
+    // So is the one an instance without a usable Claude key rejects with.
+    // Reached only by a direct navigation that outran the route context, so it
+    // is a backstop rather than the path someone normally takes.
+    if (isDisabledMessage(error.message)) return error.message
   }
   return 'Quelque chose a échoué de mon côté. Réessaie dans un instant.'
 }
 
 function Reflexion() {
   const search = Route.useSearch()
+  const { ai } = Route.useRouteContext()
   const [title, setTitle] = useState(search.probleme ?? '')
   const [mode, setMode] = useState<Mode>(search.mode ?? 'assist')
   const [status, setStatus] = useState<Status>({ kind: 'setup' })
@@ -270,6 +277,7 @@ function Reflexion() {
           defaultTitle={title}
           defaultMode={mode}
           autoFocus
+          disabledReason={ai.message}
           onStart={(value, chosen) => void start(chosen, value)}
         />
       </div>

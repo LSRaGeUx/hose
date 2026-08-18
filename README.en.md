@@ -112,9 +112,11 @@ npm run dev
 
 The seed account is `test@hose.local` / `hose-dev-password`.
 
-The only credential you need for the core feature is `HOSE_ANTHROPIC_API_KEY`.
-The contact form stays disabled without its Resend keys and says so rather than
-pretending to send.
+The only credential the core feature needs is `HOSE_ANTHROPIC_API_KEY`, and it
+is optional. Without it the app still boots, signs you in and serves every
+page: the start form is disabled and states that the assistant is off, instead
+of accepting a problem and failing on submit. The contact form degrades the
+same way without its Resend keys, and says so rather than pretending to send.
 
 ### Why `HOSE_ANTHROPIC_API_KEY` and not `ANTHROPIC_API_KEY`
 
@@ -150,6 +152,12 @@ and retries with the validation error fed back in.
 the `WHERE` clause, so another user's problem is not found rather than found
 and then refused. Route guards run in `beforeLoad`, so a signed-out request is
 redirected before any markup is produced.
+
+**Missing configuration is a state, not a crash.** Both the Claude key and the
+Resend keys are optional in the env contract, and the app is built to run
+without either. The credential is classified in one import-free module that the
+browser bundle and the engine both read, so the form's disabled state and the
+server's refusal cannot disagree about whether the key works.
 
 **A run is saved in one transaction, only once it is complete.** An abandoned
 conversation leaves nothing behind, and a partial run cannot be written.

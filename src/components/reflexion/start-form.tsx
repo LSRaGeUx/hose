@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { Alert, AlertDescription } from '#/components/ui/alert'
 import { Button } from '#/components/ui/button'
 import { Textarea } from '#/components/ui/textarea'
 import { ModePicker } from './mode-picker.tsx'
@@ -19,26 +20,44 @@ export function StartForm({
   defaultMode = 'assist',
   submitLabel = 'Démarrer',
   autoFocus = false,
+  disabledReason = null,
   onStart,
 }: {
   defaultTitle?: string
   defaultMode?: Mode
   submitLabel?: string
   autoFocus?: boolean
+  /**
+   * Why this instance cannot run the engine. Set means the form is inert: an
+   * instance without a Claude key says so here, before anything is typed,
+   * rather than accepting a problem and failing on submit.
+   */
+  disabledReason?: string | null
   onStart: (title: string, mode: Mode) => void
 }) {
   const [title, setTitle] = useState(defaultTitle)
   const [mode, setMode] = useState<Mode>(defaultMode)
   const problem = title.trim()
+  const disabled = disabledReason !== null
+
+  function submit() {
+    if (problem && !disabled) onStart(problem, mode)
+  }
 
   return (
     <form
       className="flex flex-col gap-6"
       onSubmit={(event) => {
         event.preventDefault()
-        if (problem) onStart(problem, mode)
+        submit()
       }}
     >
+      {disabled ? (
+        <Alert>
+          <AlertDescription>{disabledReason}</AlertDescription>
+        </Alert>
+      ) : null}
+
       <div className="flex flex-col gap-2">
         <label htmlFor="probleme" className="label-technical">
           Ta problématique
@@ -52,13 +71,14 @@ export function StartForm({
             // sentence far more often than it is a paragraph.
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
-              if (problem) onStart(problem, mode)
+              submit()
             }
           }}
           placeholder="Je n’ose jamais demander de l’aide au travail…"
           rows={3}
           maxLength={500}
           autoFocus={autoFocus}
+          disabled={disabled}
           aria-label="Ta problématique"
           className="border-rule-strong bg-card resize-none rounded-none px-4 py-3 text-base leading-relaxed"
         />
@@ -72,7 +92,7 @@ export function StartForm({
       <Button
         type="submit"
         size="lg"
-        disabled={!problem}
+        disabled={!problem || disabled}
         className="label-technical h-12 rounded-none text-[12px]"
       >
         {submitLabel}

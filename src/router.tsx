@@ -9,9 +9,12 @@ export function getRouter() {
 
   const router = createTanStackRouter({
     routeTree,
-    // `user` is the initial value only. The root route's beforeLoad replaces it
-    // with the session resolved from the request cookies on every navigation.
-    context: { ...context, user: null },
+    // `user` and `ai` are initial values only. The root route's beforeLoad
+    // replaces both on every navigation: the session from the request cookies,
+    // and whether this instance has a usable Claude key. `ai` starts enabled so
+    // that a router built before the first probe never renders the app as
+    // disabled by accident.
+    context: { ...context, user: null, ai: { enabled: true, message: null } },
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
