@@ -67,8 +67,7 @@ function Account() {
         {problems.length === 0 ? (
           <Card>
             <CardContent className="text-muted-foreground py-8 text-center text-sm">
-              Rien pour le moment. Lance une première réflexion depuis
-              l’accueil.
+              Rien pour le moment. Lance une première réflexion.
             </CardContent>
           </Card>
         ) : (

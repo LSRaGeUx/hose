@@ -44,14 +44,21 @@ let client: Anthropic | undefined
 export function getAnthropic(): Anthropic {
   if (client) return client
 
-  const credential = env.ANTHROPIC_API_KEY
+  const credential = env.HOSE_ANTHROPIC_API_KEY
   if (!credential) {
     throw new MissingCredentialError(
-      'ANTHROPIC_API_KEY is not set. Copy .env.example to .env.local and add your key.',
+      'HOSE_ANTHROPIC_API_KEY is not set. Copy .env.example to .env.local and add your key.',
     )
   }
   assertDirectKey(credential)
 
-  client = new Anthropic({ apiKey: credential })
+  // baseURL is pinned rather than inherited. The SDK falls back to
+  // ANTHROPIC_BASE_URL from the environment, and Netlify's dev plugin emulates
+  // an AI gateway, so an ambient base URL silently redirects our calls to a
+  // proxy that rejects our own key with a 401. We call Anthropic directly.
+  client = new Anthropic({
+    apiKey: credential,
+    baseURL: 'https://api.anthropic.com',
+  })
   return client
 }

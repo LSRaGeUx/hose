@@ -20,18 +20,15 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().url(),
 
     /**
-     * Anthropic credential for the five-whys engine. Used from phase 4.
+     * Anthropic credential for the five-whys engine.
      *
-     * Deliberately not format-checked. Netlify's Vite plugin injects its own
-     * ANTHROPIC_API_KEY into dev and deploys: a short-lived, site-scoped JWT
-     * for their AI Gateway, not an `sk-ant-` key. A prefix check rejects it and
-     * breaks the whole app, which is exactly what happened here.
-     *
-     * Phase 4 has to decide explicitly whether to call Anthropic directly with
-     * our own key or go through Netlify's gateway, rather than letting whatever
-     * happens to be in the environment pick for us.
+     * Deliberately NOT called ANTHROPIC_API_KEY. Netlify's Vite plugin claims
+     * that name for its AI Gateway and writes a short-lived, site-scoped JWT
+     * into process.env when it loads, overwriting whatever .env.local set. We
+     * call Anthropic directly, so the credential gets a name Netlify does not
+     * touch. The shape is still checked at point of use in src/lib/ai/client.ts.
      */
-    ANTHROPIC_API_KEY: z.string().min(1).optional(),
+    HOSE_ANTHROPIC_API_KEY: z.string().min(1).optional(),
   },
 
   /**

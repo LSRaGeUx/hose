@@ -21,9 +21,14 @@ function Home() {
 
       <div className="flex flex-wrap gap-3">
         {user ? (
-          <Button asChild>
-            <Link to="/mon-compte">Reprendre où j’en étais</Link>
-          </Button>
+          <>
+            <Button asChild>
+              <Link to="/reflexion">Nouvelle réflexion</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/mon-compte">Mes problématiques</Link>
+            </Button>
+          </>
         ) : (
           <>
             <Button asChild>
@@ -35,10 +40,6 @@ function Home() {
           </>
         )}
       </div>
-
-      <p className="text-muted-foreground text-sm">
-        Le questionnement arrive à la prochaine étape.
-      </p>
     </div>
   )
 }

@@ -14,6 +14,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as AuthedMonCompteRouteImport } from './routes/_authed/mon-compte'
+import { Route as AuthedReflexionRouteImport } from './routes/_authed/reflexion'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -40,6 +41,11 @@ const AuthedMonCompteRoute = AuthedMonCompteRouteImport.update({
   path: '/mon-compte',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedReflexionRoute = AuthedReflexionRouteImport.update({
+  id: '/reflexion',
+  path: '/reflexion',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
+  '/reflexion': typeof AuthedReflexionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
+  '/reflexion': typeof AuthedReflexionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -67,13 +75,26 @@ export interface FileRoutesById {
   '/connexion': typeof ConnexionRoute
   '/inscription': typeof InscriptionRoute
   '/_authed/mon-compte': typeof AuthedMonCompteRoute
+  '/_authed/reflexion': typeof AuthedReflexionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/connexion' | '/inscription' | '/mon-compte' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/connexion'
+    | '/inscription'
+    | '/mon-compte'
+    | '/reflexion'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/connexion' | '/inscription' | '/mon-compte' | '/api/auth/$'
+  to:
+    | '/'
+    | '/connexion'
+    | '/inscription'
+    | '/mon-compte'
+    | '/reflexion'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
@@ -81,6 +102,7 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/inscription'
     | '/_authed/mon-compte'
+    | '/_authed/reflexion'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -129,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedMonCompteRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/reflexion': {
+      id: '/_authed/reflexion'
+      path: '/reflexion'
+      fullPath: '/reflexion'
+      preLoaderRoute: typeof AuthedReflexionRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -141,10 +170,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteChildren {
   AuthedMonCompteRoute: typeof AuthedMonCompteRoute
+  AuthedReflexionRoute: typeof AuthedReflexionRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedMonCompteRoute: AuthedMonCompteRoute,
+  AuthedReflexionRoute: AuthedReflexionRoute,
 }
 
 const AuthedRouteWithChildren =
