@@ -15,12 +15,23 @@ import type Anthropic from '@anthropic-ai/sdk'
  * A stand-in for the SDK that records the request and returns a canned
  * response, so the engine's contract is tested without spending tokens.
  */
-function fakeClient(response: Record<string, unknown>) {
+function fakeClient(
+  response: Record<string, unknown>,
+  /** Number of leading calls that should throw a schema error first. */
+  failFirst = 0,
+) {
   const calls: Array<Record<string, any>> = []
+  let failures = 0
   const client = {
     messages: {
       parse: async (params: Record<string, unknown>) => {
         calls.push(params)
+        if (failures < failFirst) {
+          failures++
+          throw new Error(
+            'Failed to parse structured output:\nValidation issues:\n  - verbs: Too small: expected array to have >=3 items',
+          )
+        }
         return { stop_reason: 'end_turn', stop_details: null, ...response }
       },
     },
@@ -161,6 +172,55 @@ describe('the personal frame', () => {
     expect(system).toContain('les réunions')
     expect(system).not.toContain("donne de l'énergie :")
     expect(system).not.toContain('veut aller :')
+  })
+})
+
+describe('schema mismatches', () => {
+  const verbs = [
+    { verb: 'a', solution: 'A' },
+    { verb: 'b', solution: 'B' },
+    { verb: 'c', solution: 'C' },
+  ]
+
+  it('retries when the model returns the wrong number of items', async () => {
+    // Item counts are stripped from the schema the API enforces and survive
+    // only as a description, so the model can and does miscount.
+    const { client, calls } = fakeClient({ parsed_output: { verbs } }, 1)
+
+    await expect(
+      synthesize(client, 'Ma problématique', EXCHANGES),
+    ).resolves.toHaveLength(3)
+    expect(calls).toHaveLength(2)
+  })
+
+  it('tells the model what was wrong instead of just asking again', async () => {
+    const { client, calls } = fakeClient({ parsed_output: { verbs } }, 1)
+    await synthesize(client, 'Ma problématique', EXCHANGES)
+
+    expect(calls[0].system).not.toContain('invalide')
+    expect(calls[1].system).toContain('Too small')
+  })
+
+  it('gives up rather than retrying forever', async () => {
+    const { client, calls } = fakeClient({ parsed_output: { verbs } }, 99)
+
+    await expect(
+      synthesize(client, 'Ma problématique', EXCHANGES),
+    ).rejects.toBeInstanceOf(MalformedError)
+    expect(calls).toHaveLength(3)
+  })
+
+  it('does not retry a refusal, which will not change', async () => {
+    const { client, calls } = fakeClient({
+      stop_reason: 'refusal',
+      stop_details: { category: 'cyber' },
+      parsed_output: null,
+    })
+
+    await expect(askFirstQuestion(client, 'x')).rejects.toBeInstanceOf(
+      RefusedError,
+    )
+    expect(calls).toHaveLength(1)
   })
 })
 

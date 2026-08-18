@@ -101,7 +101,8 @@ export function fullChainPrompt(title: string) {
   return {
     system: `${VOICE}
 
-Déroule seule la totalité des ${WHY_COUNT} pourquoi : pour chaque question,
+Déroule seule la totalité des ${WHY_COUNT} pourquoi, exactement ${WHY_COUNT},
+ni plus ni moins : pour chaque question,
 écris aussi la réponse que la personne donnerait, à la première personne.
 Chaque réponse doit amener la question suivante, et la chaîne doit descendre
 vers une cause de fond plutôt que tourner en rond.`,
@@ -190,8 +191,8 @@ qu'elle était formulée au départ.
 
 Pour chaque verbe, propose l'action la plus utile à mettre en place :
 concrète, réalisable par la personne elle-même, dix mots maximum.
-Les ${VERB_COUNT} verbes doivent être distincts et couvrir des angles
-différents.${framing(frame)}`,
+Renvoie exactement ${VERB_COUNT} verbes, ni plus ni moins, distincts et
+couvrant des angles différents.${framing(frame)}`,
     user: `Ma problématique : ${title}
 
 Les cinq pourquoi :

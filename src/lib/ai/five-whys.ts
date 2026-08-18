@@ -51,6 +51,16 @@ type AskOptions<TSchema extends z.ZodType> = {
 }
 
 /**
+ * How many times a schema mismatch is worth retrying.
+ *
+ * Structured outputs guarantee the *shape*, not every constraint. Item counts
+ * in particular are stripped from the schema the API enforces and survive only
+ * as a description, so the model can return two verbs where three were asked
+ * for. That is rare, recoverable, and not worth showing anyone an error for.
+ */
+const PARSE_ATTEMPTS = 3
+
+/**
  * One schema-enforced request.
  *
  * The shape is guaranteed by `output_config.format`, so there is no regex, no
@@ -62,22 +72,52 @@ async function ask<TSchema extends z.ZodType>(
   client: Anthropic,
   { system, user, schema, effort, maxTokens }: AskOptions<TSchema>,
 ): Promise<z.infer<TSchema>> {
-  const message = await client.messages.parse({
-    model: MODEL,
-    max_tokens: maxTokens,
-    system,
-    output_config: { format: zodOutputFormat(schema), effort },
-    messages: [{ role: 'user', content: user }],
-  })
+  let lastIssue: string | undefined
 
-  // Always checked before reading content: a refusal returns HTTP 200 with an
-  // empty or partial body, so indexing straight into it would throw.
-  if (message.stop_reason === 'refusal') {
-    throw new RefusedError(message.stop_details?.category)
+  for (let attempt = 1; attempt <= PARSE_ATTEMPTS; attempt++) {
+    // On a retry, say plainly what was wrong with the previous answer rather
+    // than sending the identical request and hoping for a different result.
+    const correction = lastIssue
+      ? `\n\nTa réponse précédente était invalide : ${lastIssue}. Respecte exactement le format demandé.`
+      : ''
+
+    let message
+    try {
+      message = await client.messages.parse({
+        model: MODEL,
+        max_tokens: maxTokens,
+        system: system + correction,
+        output_config: { format: zodOutputFormat(schema), effort },
+        messages: [{ role: 'user', content: user }],
+      })
+    } catch (error) {
+      // The SDK throws when the response does not satisfy the schema.
+      lastIssue = error instanceof Error ? firstIssue(error.message) : undefined
+      if (attempt === PARSE_ATTEMPTS) throw new MalformedError()
+      continue
+    }
+
+    // Always checked before reading content: a refusal returns HTTP 200 with an
+    // empty or partial body, so indexing straight into it would throw.
+    if (message.stop_reason === 'refusal') {
+      throw new RefusedError(message.stop_details?.category)
+    }
+    if (message.parsed_output) return message.parsed_output
+
+    lastIssue = undefined
+    if (attempt === PARSE_ATTEMPTS) throw new MalformedError()
   }
-  if (!message.parsed_output) throw new MalformedError()
 
-  return message.parsed_output
+  throw new MalformedError()
+}
+
+/** Pulls one readable line out of the SDK's validation dump. */
+function firstIssue(message: string): string | undefined {
+  const line = message
+    .split('\n')
+    .map((l) => l.trim())
+    .find((l) => l.startsWith('- '))
+  return line?.slice(2)
 }
 
 /** The opening "pourquoi ?", used by both modes. */
