@@ -81,10 +81,13 @@ you committed to, and how often each verb has come up across all your problems.
 
 ## The rest of it
 
-|                                            |                                                     |
-| ------------------------------------------ | --------------------------------------------------- |
-| ![Sign in](docs/captures/10-connexion.jpg) | ![Sign up](docs/captures/11-inscription.jpg)        |
-| ![Contact](docs/captures/12-contact.jpg)   | ![Not found](docs/captures/13-page-introuvable.jpg) |
+| Sign in                                    | Sign up                                      |
+| ------------------------------------------ | -------------------------------------------- |
+| ![Sign in](docs/captures/10-connexion.jpg) | ![Sign up](docs/captures/11-inscription.jpg) |
+
+| Contact                                  | Not found                                           |
+| ---------------------------------------- | --------------------------------------------------- |
+| ![Contact](docs/captures/12-contact.jpg) | ![Not found](docs/captures/13-page-introuvable.jpg) |
 
 Dark mode is designed rather than inverted; both surfaces were checked for
 contrast.
@@ -93,7 +96,7 @@ contrast.
 
 ## Stack
 
-|           |                                                                               |
+| Layer     | Choice                                                                        |
 | --------- | ----------------------------------------------------------------------------- |
 | Framework | [TanStack Start](https://tanstack.com/start) (React 19, Vite, TypeScript)     |
 | Database  | Postgres via [Drizzle](https://orm.drizzle.team/), local through podman       |
@@ -134,7 +137,7 @@ environment and calls get proxied to that gateway, which rejects your key.
 
 ## Commands
 
-|                                                                |                             |
+| Command                                                        | What it does                |
 | -------------------------------------------------------------- | --------------------------- |
 | `npm run dev`                                                  | dev server on :3000         |
 | `npm run db:up` / `db:down` / `db:nuke`                        | local Postgres              |

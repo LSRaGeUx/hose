@@ -86,10 +86,13 @@ problématiques.
 
 ## Le reste
 
-|                                              |                                                            |
-| -------------------------------------------- | ---------------------------------------------------------- |
-| ![Connexion](docs/captures/10-connexion.jpg) | ![Inscription](docs/captures/11-inscription.jpg)           |
-| ![Contact](docs/captures/12-contact.jpg)     | ![Page introuvable](docs/captures/13-page-introuvable.jpg) |
+| Connexion                                    | Inscription                                      |
+| -------------------------------------------- | ------------------------------------------------ |
+| ![Connexion](docs/captures/10-connexion.jpg) | ![Inscription](docs/captures/11-inscription.jpg) |
+
+| Contact                                  | Page introuvable                                           |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| ![Contact](docs/captures/12-contact.jpg) | ![Page introuvable](docs/captures/13-page-introuvable.jpg) |
 
 Le thème sombre est conçu, pas inversé ; le contraste a été vérifié sur les
 deux fonds.
@@ -98,7 +101,7 @@ deux fonds.
 
 ## Stack
 
-|                 |                                                                            |
+| Brique          | Choix                                                                      |
 | --------------- | -------------------------------------------------------------------------- |
 | Framework       | [TanStack Start](https://tanstack.com/start) (React 19, Vite, TypeScript)  |
 | Base de données | Postgres via [Drizzle](https://orm.drizzle.team/), en local via podman     |
@@ -142,7 +145,7 @@ clé.
 
 ## Commandes
 
-|                                                                |                                 |
+| Commande                                                       | Ce qu’elle fait                 |
 | -------------------------------------------------------------- | ------------------------------- |
 | `npm run dev`                                                  | serveur de dev sur :3000        |
 | `npm run db:up` / `db:down` / `db:nuke`                        | Postgres local                  |

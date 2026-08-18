@@ -27,7 +27,7 @@ mais elles se répondent.
 
 ## Repères rapides
 
-|           |                                                                   |
+| Brique    | Choix                                                             |
 | --------- | ----------------------------------------------------------------- |
 | Framework | TanStack Start (React 19, Vite, TypeScript)                       |
 | Base      | Postgres 17, accédée via Drizzle                                  |
