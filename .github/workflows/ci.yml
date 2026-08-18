@@ -9,9 +9,32 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Placeholders. Nothing in CI reaches a real database or the Anthropic API,
+  # but the env contract in src/env.ts still has to be satisfied.
+  DATABASE_URL: postgresql://hose:hose@localhost:5432/hose
+  BETTER_AUTH_SECRET: ci-placeholder-secret-at-least-32-chars
+  BETTER_AUTH_URL: http://localhost:3100
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: hose
+          POSTGRES_PASSWORD: hose
+          POSTGRES_DB: hose
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hose -d hose"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +52,7 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
-      - name: Test
+      - name: Unit tests
         run: npm test
 
       - name: Lint
@@ -39,10 +62,21 @@ jobs:
         run: npm run check
 
       - name: Build
-        # Placeholders only. The build must not reach a real database or the
-        # Anthropic API, but the env contract in src/env.ts still has to pass.
-        env:
-          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
-          BETTER_AUTH_SECRET: ci-placeholder-secret-at-least-32-chars
-          BETTER_AUTH_URL: http://localhost:3000
         run: npm run build
+
+      - name: Migrate
+        run: npm run db:migrate
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

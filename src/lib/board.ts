@@ -42,7 +42,7 @@ async function requireUserId(): Promise<string> {
  * where the row is read first and the permission decided second.
  */
 export const fetchBoard = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ problemId: z.string().uuid() }))
+  .validator(z.object({ problemId: z.string().uuid() }))
   .handler(async ({ data }): Promise<BoardPayload> => {
     const userId = await requireUserId()
 
@@ -80,7 +80,7 @@ export const fetchBoard = createServerFn({ method: 'GET' })
   })
 
 export const saveBoard = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     z.object({
       problemId: z.string().uuid(),
       nodes: z.array(nodeSchema),

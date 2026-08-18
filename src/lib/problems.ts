@@ -86,7 +86,7 @@ const saveRunSchema = z.object({
  * transaction, and dropped the solutions entirely.
  */
 export const saveRun = createServerFn({ method: 'POST' })
-  .inputValidator(saveRunSchema)
+  .validator(saveRunSchema)
   .handler(async ({ data }): Promise<{ problemId: string }> => {
     const session = await auth.api.getSession({
       headers: getRequest().headers,

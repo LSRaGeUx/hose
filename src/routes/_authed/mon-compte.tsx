@@ -11,6 +11,7 @@ import {
 } from '#/components/ui/card'
 import { fetchMyProblems, fetchVerbStats } from '#/lib/problems'
 import { VerbChart } from '#/components/stats/verb-chart'
+import { ProfileForm } from '#/components/account/profile-form'
 
 import type { ProblemSummary } from '#/lib/problems'
 
@@ -45,17 +46,12 @@ function Account() {
         <CardHeader>
           <CardTitle>Informations</CardTitle>
         </CardHeader>
-        <CardContent>
-          <dl className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-1">
-              <dt className="text-muted-foreground text-sm">Nom</dt>
-              <dd className="font-medium">{user.name}</dd>
-            </div>
-            <div className="flex flex-col gap-1">
-              <dt className="text-muted-foreground text-sm">Adresse e-mail</dt>
-              <dd className="font-medium">{user.email}</dd>
-            </div>
-          </dl>
+        <CardContent className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <p className="text-muted-foreground text-sm">Adresse e-mail</p>
+            <p className="font-medium">{user.email}</p>
+          </div>
+          <ProfileForm name={user.name} image={user.image} />
         </CardContent>
       </Card>
 

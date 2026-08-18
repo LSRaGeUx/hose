@@ -12,7 +12,7 @@ import { env } from '#/env'
  * absent rather than reporting success for a message nobody received.
  */
 export const sendContactMessage = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     z.object({
       name: z.string().trim().min(1).max(120),
       email: z.string().trim().email().max(200),

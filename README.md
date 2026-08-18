@@ -1,265 +1,107 @@
-Welcome to your new TanStack Start app!
+# Hose
 
-# Getting Started
+Challenge ta problématique. You type a problem you are stuck on, however badly
+phrased, and Hose walks it through the **five whys** with you. It ends with
+three action verbs, each paired with one concrete thing you could do.
 
-To run this application:
+French-language app. Built with TanStack Start, Postgres and Claude.
+
+> This is a rewrite of a 2024 project. The original is archived at
+> [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive); nothing
+> from it was carried over except the idea.
+
+## How it works
+
+Two modes, both ending at the same place.
+
+- **Assisté** asks one "pourquoi ?" at a time and waits for your real answer.
+- **Auto** runs the whole chain unattended so you can react to the result.
+
+Both converge on a synthesis step that produces the three verbs. From there the
+run is saved and you get a **tableau**: a canvas that opens already containing
+your own reasoning, the problem at the top, the five whys descending, the verbs
+fanning out at the bottom.
+
+## Stack
+
+|           |                                                                               |
+| --------- | ----------------------------------------------------------------------------- |
+| Framework | [TanStack Start](https://tanstack.com/start) (React 19, Vite, TypeScript)     |
+| Database  | Postgres via [Drizzle](https://orm.drizzle.team/), local through podman       |
+| Auth      | [Better Auth](https://www.better-auth.com), email and password                |
+| AI        | [Claude](https://www.anthropic.com) (`claude-opus-5`) with structured outputs |
+| Canvas    | [React Flow](https://reactflow.dev)                                           |
+| UI        | Tailwind 4, shadcn/ui                                                         |
+| Tests     | Vitest, Playwright                                                            |
+
+## Running it
+
+Requires Node 22+ and podman (or Docker, if you adjust `compose.yaml`).
 
 ```bash
 npm install
+cp .env.example .env.local     # then fill it in
+npm run db:up                  # Postgres 17 on localhost:5432
+npm run db:migrate
+npm run db:seed                # optional: one account, two worked-through problems
 npm run dev
 ```
 
-# Building For Production
+The seed account is `test@hose.local` / `hose-dev-password`.
 
-To build this application for production:
+The only credential you need for the core feature is `HOSE_ANTHROPIC_API_KEY`.
+The contact form stays disabled without its Resend keys and says so rather than
+pretending to send.
 
-```bash
-npm run build
-```
+### Why `HOSE_ANTHROPIC_API_KEY` and not `ANTHROPIC_API_KEY`
 
-## Styling
+Netlify's Vite plugin claims `ANTHROPIC_API_KEY` for its own AI Gateway and
+writes a site-scoped token into `process.env` when it loads, overwriting
+whatever you set. Ours uses a name nothing else takes. The client also pins
+`baseURL`, because the SDK otherwise inherits `ANTHROPIC_BASE_URL` from the
+environment and calls get proxied to that gateway, which rejects your key.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## Commands
 
-### Removing Tailwind CSS
+|                                                                |                             |
+| -------------------------------------------------------------- | --------------------------- |
+| `npm run dev`                                                  | dev server on :3000         |
+| `npm run db:up` / `db:down` / `db:nuke`                        | local Postgres              |
+| `npm run db:generate` / `db:migrate` / `db:seed` / `db:studio` | schema and data             |
+| `npm test`                                                     | unit tests                  |
+| `npm run test:e2e`                                             | Playwright, on its own port |
+| `npm run lint` / `format` / `check`                            | eslint and prettier         |
 
-If you prefer not to use Tailwind CSS:
+## Notes on the design
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
+A few decisions worth knowing about, since they are the difference between this
+and the version it replaces.
 
-## Linting & Formatting
+**The model's output shape is enforced, not requested.** Responses come back
+through structured outputs against a schema, so there is no regex, no
+`JSON.parse` and no repair step anywhere in the app.
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+**Authorization is decided on the server, in the query.** Ownership is part of
+the `WHERE` clause, so another user's problem is not found rather than found
+and then refused. Route guards run in `beforeLoad`, so a signed-out request is
+redirected before any markup is produced.
 
-```bash
-npm run lint
-npm run format
-npm run check
-```
+**A run is saved in one transaction, only once it is complete.** An abandoned
+conversation leaves nothing behind, and a partial run cannot be written.
 
-## Setting up Neon
+**The chart is one colour.** Every bar measures the same thing, so it is a
+single series; a colour per verb would imply a distinction that does not exist.
+The hue was validated against both light and dark surfaces rather than picked
+by eye.
 
-When running the `dev` command, `vite-plugin-neon-new` will identify there is not a database setup. It will then create and seed a claimable database.
+## Tests
 
-It is the same process as [Neon Launchpad](https://neon.new).
+Unit tests cover the five-whys engine against a fake client, so the suite never
+spends API tokens or waits on model latency. Playwright covers sign-up, the
+server-side guard, sign-out and the not-found state.
 
-> [!IMPORTANT]  
-> Claimable databases expire in 72 hours.
+Both run in CI against a real Postgres service.
 
-## Setting up Better Auth
+## Licence
 
-1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
-
-   ```bash
-   npx -y @better-auth/cli secret
-   ```
-
-2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
-
-### Adding a Database (Optional)
-
-Better Auth can work in stateless mode, but to persist user data, add a database:
-
-```typescript
-// src/lib/auth.ts
-import { betterAuth } from 'better-auth'
-import { Pool } from 'pg'
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-  // ... rest of config
-})
-```
-
-Then run migrations:
-
-```bash
-npx -y @better-auth/cli migrate
-```
-
-## T3Env
-
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
-
-### Usage
-
-```ts
-import { env } from '#/env'
-
-console.log(env.VITE_APP_TITLE)
-```
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-## Deploy to Netlify
-
-This project ships with `netlify.toml` configured for a Netlify site:
-
-1. Push this repo to GitHub
-2. Visit https://app.netlify.com/start and import the repo
-3. Netlify auto-detects the build (`vite build` → `dist/client`)
-4. Open **Site settings → Environment variables** and add anything from `.env.example` that needs a real value in production
-5. Trigger the first deploy
-
-Server functions and API routes run on Netlify Functions. For lower-latency request handling, see Netlify Edge Functions: https://docs.netlify.com/edge-functions/overview.
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from '@tanstack/react-router'
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+GNU General Public License. See [LICENSE](LICENSE).

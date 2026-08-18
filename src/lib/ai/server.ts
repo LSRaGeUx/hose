@@ -34,14 +34,14 @@ async function requireUser() {
 }
 
 export const startProblem = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ title: titleSchema }))
+  .validator(z.object({ title: titleSchema }))
   .handler(async ({ data }) => {
     await requireUser()
     return { question: await askFirstQuestion(getAnthropic(), data.title) }
   })
 
 export const nextQuestion = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     z.object({
       title: titleSchema,
       exchanges: z.array(exchangeSchema).min(1).max(5),
@@ -59,14 +59,14 @@ export const nextQuestion = createServerFn({ method: 'POST' })
   })
 
 export const generateChain = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ title: titleSchema }))
+  .validator(z.object({ title: titleSchema }))
   .handler(async ({ data }) => {
     await requireUser()
     return { exchanges: await runFullChain(getAnthropic(), data.title) }
   })
 
 export const synthesizeVerbs = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     z.object({
       title: titleSchema,
       exchanges: z.array(exchangeSchema).length(5),

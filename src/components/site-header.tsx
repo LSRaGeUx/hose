@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouteContext } from '@tanstack/react-router'
+import { Link, useRouteContext } from '@tanstack/react-router'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Button } from '#/components/ui/button'
@@ -15,12 +15,12 @@ function initials(name: string) {
 
 export function SiteHeader() {
   const { user } = useRouteContext({ from: '__root__' })
-  const navigate = useNavigate()
 
   async function signOut() {
     await authClient.signOut()
-    // Re-run beforeLoad so the server drops the session it resolved earlier.
-    await navigate({ to: '/', reloadDocument: true })
+    // Document load, matching sign-in and sign-up: the server re-resolves the
+    // session from cookies rather than the client keeping a stale copy.
+    window.location.assign('/')
   }
 
   return (
