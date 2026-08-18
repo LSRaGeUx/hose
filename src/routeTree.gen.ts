@@ -15,6 +15,7 @@ import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as AuthedMonCompteRouteImport } from './routes/_authed/mon-compte'
 import { Route as AuthedReflexionRouteImport } from './routes/_authed/reflexion'
+import { Route as AuthedTableauProblemIdRouteImport } from './routes/_authed/tableau.$problemId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -46,6 +47,11 @@ const AuthedReflexionRoute = AuthedReflexionRouteImport.update({
   path: '/reflexion',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedTableauProblemIdRoute = AuthedTableauProblemIdRouteImport.update({
+  id: '/tableau/$problemId',
+  path: '/tableau/$problemId',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
   '/reflexion': typeof AuthedReflexionRoute
+  '/tableau/$problemId': typeof AuthedTableauProblemIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
   '/reflexion': typeof AuthedReflexionRoute
+  '/tableau/$problemId': typeof AuthedTableauProblemIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/inscription': typeof InscriptionRoute
   '/_authed/mon-compte': typeof AuthedMonCompteRoute
   '/_authed/reflexion': typeof AuthedReflexionRoute
+  '/_authed/tableau/$problemId': typeof AuthedTableauProblemIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/inscription'
     | '/mon-compte'
     | '/reflexion'
+    | '/tableau/$problemId'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
     | '/inscription'
     | '/mon-compte'
     | '/reflexion'
+    | '/tableau/$problemId'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
     | '/inscription'
     | '/_authed/mon-compte'
     | '/_authed/reflexion'
+    | '/_authed/tableau/$problemId'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -158,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedReflexionRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/tableau/$problemId': {
+      id: '/_authed/tableau/$problemId'
+      path: '/tableau/$problemId'
+      fullPath: '/tableau/$problemId'
+      preLoaderRoute: typeof AuthedTableauProblemIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -171,11 +190,13 @@ declare module '@tanstack/react-router' {
 interface AuthedRouteChildren {
   AuthedMonCompteRoute: typeof AuthedMonCompteRoute
   AuthedReflexionRoute: typeof AuthedReflexionRoute
+  AuthedTableauProblemIdRoute: typeof AuthedTableauProblemIdRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedMonCompteRoute: AuthedMonCompteRoute,
   AuthedReflexionRoute: AuthedReflexionRoute,
+  AuthedTableauProblemIdRoute: AuthedTableauProblemIdRoute,
 }
 
 const AuthedRouteWithChildren =

@@ -14,6 +14,8 @@ import {
 
 import { user } from './auth-schema.ts'
 
+import type { BoardGraph } from '#/lib/board-types'
+
 // Better Auth owns user / session / account / verification. Re-exported so the
 // adapter and drizzle-kit both see one schema module.
 export * from './auth-schema.ts'
@@ -99,10 +101,7 @@ export const problemVerbs = pgTable(
   ],
 )
 
-export type BoardState = {
-  nodes: Array<unknown>
-  edges: Array<unknown>
-}
+export type BoardState = BoardGraph
 
 /** The React Flow board for a problem. At most one per problem. */
 export const boards = pgTable('boards', {

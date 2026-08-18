@@ -1,4 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
+
+import { Button } from '#/components/ui/button'
 
 import {
   Card,
@@ -102,6 +104,14 @@ function ProblemCard({ problem }: { problem: ProblemSummary }) {
           {complete ? 'réponses' : 'réponses, en cours'}
         </CardDescription>
       </CardHeader>
+
+      <CardContent className="flex flex-col gap-4">
+        <Button asChild variant="outline" size="sm" className="self-start">
+          <Link to="/tableau/$problemId" params={{ problemId: problem.id }}>
+            Ouvrir le tableau
+          </Link>
+        </Button>
+      </CardContent>
 
       {problem.verbs.length > 0 ? (
         <CardContent>
