@@ -5,11 +5,20 @@
  * (measured sizes, drag flags, selection) that must not end up in the jsonb
  * column, and `unknown` cannot cross the server-function boundary anyway.
  */
+
+/** Seeded from the run, or added by the person while thinking. */
+export type BoardNodeKind = 'problem' | 'why' | 'verb' | 'note' | 'action'
+
 export type BoardNode = {
   id: string
   type: string
   position: { x: number; y: number }
-  data: { label: string; detail?: string }
+  data: {
+    label: string
+    detail?: string
+    /** Action nodes only: whether the person has done the thing. */
+    done?: boolean
+  }
 }
 
 export type BoardEdge = {

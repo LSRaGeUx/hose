@@ -37,16 +37,16 @@ function Board() {
   useEffect(() => setMounted(true), [])
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-muted-foreground text-sm">Tableau</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-balance">
+          <p className="label-technical">Tableau</p>
+          <h1 className="text-2xl font-semibold tracking-[-0.02em] text-balance">
             {board.title}
           </h1>
-          <p className="text-muted-foreground text-sm">
-            Déplace les blocs, relie-les, construis la suite. Tout est
-            enregistré au fil de l’eau.
+          <p className="text-muted-foreground max-w-[52ch] text-sm">
+            Ton raisonnement est déjà là. Déplace-le, relie-le, ajoute tes notes
+            et les actions à mener. Tout est enregistré au fil de l’eau.
           </p>
         </div>
         <Button asChild variant="outline" size="sm">
