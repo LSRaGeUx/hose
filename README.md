@@ -10,6 +10,11 @@ French-language app. Built with TanStack Start, Postgres and Claude.
 > [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive); nothing
 > from it was carried over except the idea.
 
+> Portfolio project. It runs locally against a local Postgres and your own
+> Claude key. There is no deployed instance.
+
+![A full run in Auto mode, from the problem to the tableau](docs/demo.gif)
+
 ## How it works
 
 Two modes, both ending at the same place.
@@ -21,6 +26,62 @@ Both converge on a synthesis step that produces the three verbs. From there the
 run is saved and you get a **tableau**: a canvas that opens already containing
 your own reasoning, the problem at the top, the five whys descending, the verbs
 fanning out at the bottom.
+
+## A run, end to end
+
+Every screenshot below is a real run against the live model. Nothing is mocked.
+
+**1 · The problem goes on the landing page.** Not behind a button, not in a
+modal. The first thing you see is the field you came to fill in.
+
+![Landing page with the problem field](docs/01-accueil.jpg)
+
+**2 · You pick how you want to be walked through it.** Assisté by default; Auto
+is there for when you do not yet know what to expect from the method.
+
+![Problem filled in, with the two modes](docs/02-accueil-rempli.jpg)
+
+**3 · In Assisté, one question at a time.** Each answer feeds the next
+question, so the chain follows your reasoning rather than a script. Any
+question can be swapped for another, and any answer can be edited after the
+fact.
+
+![Assisté mode, two exchanges deep](docs/08-mode-assiste.jpg)
+
+**4 · The chain ends in three action verbs.** Each verb comes with one concrete
+thing to do, and the advice is written against your own profile: what gives you
+energy, what drains you, where you are trying to get to.
+
+![The five whys and the three verbs](docs/04-chaine-et-verbes.jpg)
+
+**5 · Then you commit to exactly one.** The model proposes a dated, concrete
+first step for the verb you chose. You edit it until it is true, then commit.
+
+![The commitment step](docs/05-engagement.jpg)
+
+**6 · The tableau is yours to change.** It opens with the reasoning already
+laid out, your profile in the left column and the committed action at the
+bottom. From there it is a canvas: move things, connect them, add notes and
+actions, undo. Everything saves as you go.
+
+![The tableau](docs/07-tableau.jpg)
+
+**7 · Mon compte keeps the history.** Every run, the verbs it produced, what
+you committed to, and how often each verb has come up across all your problems.
+
+![Mon compte](docs/06-mon-compte.jpg)
+
+## The rest of it
+
+|                                   |                                            |
+| --------------------------------- | ------------------------------------------ |
+| ![Sign in](docs/10-connexion.jpg) | ![Sign up](docs/11-inscription.jpg)        |
+| ![Contact](docs/12-contact.jpg)   | ![Not found](docs/13-page-introuvable.jpg) |
+
+Dark mode is designed rather than inverted; both surfaces were checked for
+contrast.
+
+![Dark mode](docs/09-mode-assiste-sombre.jpg)
 
 ## Stack
 
@@ -79,7 +140,9 @@ and the version it replaces.
 
 **The model's output shape is enforced, not requested.** Responses come back
 through structured outputs against a schema, so there is no regex, no
-`JSON.parse` and no repair step anywhere in the app.
+`JSON.parse` and no repair step anywhere in the app. Counts are the exception:
+the API does not enforce array lengths, so the engine states them in the prompt
+and retries with the validation error fed back in.
 
 **Authorization is decided on the server, in the query.** Ownership is part of
 the `WHERE` clause, so another user's problem is not found rather than found
