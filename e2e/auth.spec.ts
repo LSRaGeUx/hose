@@ -77,9 +77,9 @@ test('sign up, land on the account page, sign out', async ({ page }) => {
   await expect(page.getByText('Rien pour le moment.')).toBeVisible()
 
   await clickUntil(
-    page.getByRole('button', { name: 'Se déconnecter' }),
+    page.getByRole('button', { name: 'Déconnexion' }),
     // Scoped to the header: the signed-out home page also links to sign-in.
-    page.getByRole('banner').getByRole('link', { name: 'Se connecter' }),
+    page.getByRole('banner').getByRole('link', { name: 'Connexion' }),
   )
 })
 
@@ -113,9 +113,9 @@ test('a wrong password is refused', async ({ page }) => {
     page.getByRole('heading', { name: 'Mon compte' }),
   )
   await clickUntil(
-    page.getByRole('button', { name: 'Se déconnecter' }),
+    page.getByRole('button', { name: 'Déconnexion' }),
     // Scoped to the header: the signed-out home page also links to sign-in.
-    page.getByRole('banner').getByRole('link', { name: 'Se connecter' }),
+    page.getByRole('banner').getByRole('link', { name: 'Connexion' }),
   )
 
   await page.goto('/connexion')

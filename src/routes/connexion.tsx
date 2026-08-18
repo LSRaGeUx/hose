@@ -60,10 +60,10 @@ function SignIn() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
-      <Card>
+    <div className="mx-auto flex max-w-md flex-col gap-6 px-5 py-20">
+      <Card className="rounded-none border-rule-strong shadow-none">
         <CardHeader>
-          <CardTitle>Connexion</CardTitle>
+          <CardTitle className="text-2xl tracking-tight">Connexion</CardTitle>
           <CardDescription>
             Retrouve tes problématiques et tes verbes d’action.
           </CardDescription>

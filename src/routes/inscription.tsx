@@ -63,10 +63,12 @@ function SignUp() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
-      <Card>
+    <div className="mx-auto flex max-w-md flex-col gap-6 px-5 py-20">
+      <Card className="rounded-none border-rule-strong shadow-none">
         <CardHeader>
-          <CardTitle>Créer un compte</CardTitle>
+          <CardTitle className="text-2xl tracking-tight">
+            Créer un compte
+          </CardTitle>
           <CardDescription>
             Garde une trace de tes problématiques et de leur cheminement.
           </CardDescription>

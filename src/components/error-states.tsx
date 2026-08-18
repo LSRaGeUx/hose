@@ -10,8 +10,9 @@ function Shell({
   children: React.ReactNode
 }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-start gap-4 px-4 py-24">
-      <h1 className="text-2xl font-semibold tracking-tight text-balance">
+    <div className="mx-auto flex max-w-md flex-col items-start gap-5 px-5 py-28">
+      <p className="label-technical">Erreur</p>
+      <h1 className="text-3xl font-semibold tracking-[-0.02em] text-balance">
         {title}
       </h1>
       {children}

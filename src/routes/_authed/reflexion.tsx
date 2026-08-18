@@ -158,9 +158,9 @@ function Reflexion() {
 
   if (status.kind === 'setup') {
     return (
-      <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-16">
+      <div className="mx-auto flex max-w-2xl flex-col gap-8 px-5 py-20">
         <div className="flex flex-col gap-3">
-          <h1 className="text-3xl font-semibold tracking-tight text-balance">
+          <h1 className="text-3xl font-semibold tracking-[-0.02em] text-balance">
             Nouvelle réflexion
           </h1>
           <p className="text-muted-foreground">
@@ -180,10 +180,10 @@ function Reflexion() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-12">
+    <div className="mx-auto flex max-w-2xl flex-col gap-10 px-5 py-14">
       <div className="flex flex-col gap-1">
-        <p className="text-muted-foreground text-sm">Ta problématique</p>
-        <h1 className="text-xl font-semibold tracking-tight text-balance">
+        <p className="label-technical">Ta problématique</p>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em] text-balance">
           {problem}
         </h1>
       </div>

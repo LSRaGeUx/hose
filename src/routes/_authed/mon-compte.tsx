@@ -34,28 +34,30 @@ function Account() {
   const { problems, verbs } = Route.useLoaderData()
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12">
+    <div className="mx-auto flex max-w-3xl flex-col gap-10 px-5 py-14">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Mon compte</h1>
+        <h1 className="text-3xl font-semibold tracking-[-0.02em]">
+          Mon compte
+        </h1>
         <p className="text-muted-foreground">
           Bonjour {user.name.split(' ')[0]}.
         </p>
       </div>
 
-      <Card>
+      <Card className="rounded-none border-rule-strong shadow-none">
         <CardHeader>
           <CardTitle>Informations</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
-            <p className="text-muted-foreground text-sm">Adresse e-mail</p>
+            <p className="label-technical">Adresse e-mail</p>
             <p className="font-medium">{user.email}</p>
           </div>
           <ProfileForm name={user.name} image={user.image} />
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-none border-rule-strong shadow-none">
         <CardHeader>
           <CardTitle>Mes verbes d’action</CardTitle>
           <CardDescription>
@@ -69,7 +71,7 @@ function Account() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-xl font-semibold tracking-tight">
+          <h2 className="text-xl font-semibold tracking-[-0.02em]">
             Mes problématiques
           </h2>
           <p className="text-muted-foreground text-sm tabular-nums">
@@ -79,7 +81,7 @@ function Account() {
         </div>
 
         {problems.length === 0 ? (
-          <Card>
+          <Card className="rounded-none border-rule-strong shadow-none">
             <CardContent className="text-muted-foreground py-8 text-center text-sm">
               Rien pour le moment. Lance une première réflexion.
             </CardContent>
@@ -102,7 +104,7 @@ function ProblemCard({ problem }: { problem: ProblemSummary }) {
   const complete = problem.answeredCount === problem.totalCount
 
   return (
-    <Card>
+    <Card className="rounded-none border-rule-strong shadow-none">
       <CardHeader>
         <CardTitle className="text-base leading-snug text-balance">
           {problem.title}

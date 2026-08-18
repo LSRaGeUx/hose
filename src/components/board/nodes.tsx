@@ -16,9 +16,7 @@ function Shell({
   hasTarget?: boolean
 }) {
   return (
-    <div
-      className={`w-64 rounded-md border-2 px-4 py-3 text-left shadow-sm ${tone}`}
-    >
+    <div className={`w-64 border px-4 py-3 text-left ${tone}`}>
       {hasTarget ? (
         <Handle type="target" position={Position.Top} className="!size-2" />
       ) : null}
@@ -33,10 +31,8 @@ function Shell({
 export function ProblemNode({ data }: NodeProps) {
   const d = data as Data
   return (
-    <Shell tone="border-foreground bg-background" hasTarget={false}>
-      <p className="text-muted-foreground text-[10px] tracking-wide uppercase">
-        Problématique
-      </p>
+    <Shell tone="border-foreground bg-card" hasTarget={false}>
+      <p className="label-technical">Problématique</p>
       <p className="text-sm leading-snug font-semibold">{d.label}</p>
     </Shell>
   )
@@ -45,7 +41,7 @@ export function ProblemNode({ data }: NodeProps) {
 export function WhyNode({ data }: NodeProps) {
   const d = data as Data
   return (
-    <Shell tone="border-border bg-background">
+    <Shell tone="border-rule-strong bg-card">
       <p className="text-sm leading-snug font-medium">{d.label}</p>
       {d.detail ? (
         <p className="text-muted-foreground mt-1 text-xs leading-snug">
@@ -59,8 +55,8 @@ export function WhyNode({ data }: NodeProps) {
 export function VerbNode({ data }: NodeProps) {
   const d = data as Data
   return (
-    <Shell tone="border-foreground/40 bg-accent/40" hasSource={false}>
-      <p className="text-sm font-semibold lowercase">{d.label}</p>
+    <Shell tone="border-signal bg-signal-wash" hasSource={false}>
+      <p className="text-signal text-sm font-semibold lowercase">{d.label}</p>
       {d.detail ? (
         <p className="text-muted-foreground mt-1 text-xs leading-snug">
           {d.detail}

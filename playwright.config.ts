@@ -17,8 +17,10 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 2 : 0,
-  // CI machines are slower and colder than a laptop.
-  timeout: process.env.CI ? 60_000 : 30_000,
+  // Generous on purpose. Several tests perform three interactions that each
+  // retry until React has hydrated, so the per-test budget has to exceed the
+  // sum of those retries rather than one of them.
+  timeout: 120_000,
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: BASE_URL,

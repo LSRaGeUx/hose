@@ -39,28 +39,42 @@ export function StartForm({
         if (problem) onStart(problem, mode)
       }}
     >
-      <Textarea
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => {
-          // Enter submits, shift+enter keeps a newline: this is one short
-          // sentence far more often than it is a paragraph.
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault()
-            if (problem) onStart(problem, mode)
-          }
-        }}
-        placeholder="Comment améliorer le monde d'aujourd'hui ?"
-        rows={3}
-        maxLength={500}
-        autoFocus={autoFocus}
-        aria-label="Ta problématique"
-        className="text-base"
-      />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="probleme" className="label-technical">
+          Ta problématique
+        </label>
+        <Textarea
+          id="probleme"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            // Enter submits, shift+enter keeps a newline: this is one short
+            // sentence far more often than it is a paragraph.
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              if (problem) onStart(problem, mode)
+            }
+          }}
+          placeholder="Je n’ose jamais demander de l’aide au travail…"
+          rows={3}
+          maxLength={500}
+          autoFocus={autoFocus}
+          aria-label="Ta problématique"
+          className="border-rule-strong bg-card resize-none rounded-none px-4 py-3 text-base leading-relaxed"
+        />
+        <p className="text-muted-foreground text-right font-mono text-[11px] tabular-nums">
+          {title.length}/500
+        </p>
+      </div>
 
       <ModePicker mode={mode} onChange={setMode} />
 
-      <Button type="submit" size="lg" disabled={!problem}>
+      <Button
+        type="submit"
+        size="lg"
+        disabled={!problem}
+        className="label-technical h-12 rounded-none text-[12px]"
+      >
         {submitLabel}
       </Button>
     </form>

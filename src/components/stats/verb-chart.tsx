@@ -17,10 +17,14 @@ import type { VerbCount } from '#/lib/problems'
  *
  * Every bar measures the same thing, so this is one series: colour carries no
  * information here and a rainbow would imply a distinction that does not
- * exist. Length is the encoding. #0d9488 was validated against both the light
- * and dark chart surfaces for lightness band, chroma floor and contrast.
+ * exist. Length is the encoding.
+ *
+ * It reuses the app's signal, which is spent on the payoff everywhere else and
+ * is exactly what these bars count. Both its light and dark values were
+ * validated against their own surface for lightness band, chroma floor and
+ * contrast.
  */
-const SERIES = '#0d9488'
+const SERIES = 'var(--signal)'
 const ROW_HEIGHT = 34
 
 export function VerbChart({ verbs }: { verbs: Array<VerbCount> }) {

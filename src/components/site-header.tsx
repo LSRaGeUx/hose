@@ -18,43 +18,59 @@ export function SiteHeader() {
 
   async function signOut() {
     await authClient.signOut()
-    // Document load, matching sign-in and sign-up: the server re-resolves the
-    // session from cookies rather than the client keeping a stale copy.
     window.location.assign('/')
   }
 
   return (
-    <header className="border-border/60 border-b">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
-        <Link to="/" className="text-lg font-semibold tracking-tight">
-          Hose
+    <header className="border-rule bg-background/85 sticky top-0 z-40 border-b backdrop-blur-sm">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-5">
+        <Link to="/" className="group flex items-baseline gap-2">
+          <span className="text-[17px] font-semibold tracking-tight">Hose</span>
+          <span className="label-technical group-hover:text-signal hidden transition-colors sm:inline">
+            méthode des 5 pourquoi
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
+        <nav className="flex items-center gap-1">
+          <Button asChild variant="ghost" size="sm" className="label-technical">
             <Link to="/contact">Contact</Link>
           </Button>
           {user ? (
             <>
-              <Button asChild variant="ghost" size="sm">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="label-technical"
+              >
                 <Link to="/mon-compte">Mon compte</Link>
               </Button>
-              <Avatar className="size-8">
+              <Avatar className="border-rule size-7 rounded-none border">
                 {user.image ? <AvatarImage src={user.image} alt="" /> : null}
-                <AvatarFallback className="text-xs">
+                <AvatarFallback className="rounded-none font-mono text-[10px]">
                   {initials(user.name)}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm" onClick={signOut}>
-                Se déconnecter
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={signOut}
+                className="label-technical"
+              >
+                Déconnexion
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/connexion">Se connecter</Link>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="label-technical"
+              >
+                <Link to="/connexion">Connexion</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="label-technical">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
