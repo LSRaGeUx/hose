@@ -14,7 +14,10 @@ import {
   synthesisPrompt,
 } from './prompts.ts'
 
+import { EMPTY_FRAME } from './frame.ts'
+
 import type Anthropic from '@anthropic-ai/sdk'
+import type { PersonalFrame } from './frame.ts'
 import type { z } from 'zod'
 import type { Chain, Exchange, Synthesis } from './schemas.ts'
 
@@ -135,8 +138,9 @@ export async function synthesize(
   client: Anthropic,
   title: string,
   exchanges: Array<Exchange>,
+  frame: PersonalFrame = EMPTY_FRAME,
 ): Promise<Synthesis['verbs']> {
-  const { system, user } = synthesisPrompt(title, exchanges)
+  const { system, user } = synthesisPrompt(title, exchanges, frame)
   const out = await ask(client, {
     system,
     user,

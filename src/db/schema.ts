@@ -21,6 +21,30 @@ import type { BoardGraph } from '#/lib/board-types'
 export * from './auth-schema.ts'
 
 /**
+ * What the advice has to fit.
+ *
+ * The 2024 app drew this on its board as "Ce que j'aime faire", "Ce que je
+ * déteste faire" and "Mes aspirations", but nothing ever read it: the model
+ * proposed action verbs knowing nothing about the person. Kept here so the
+ * synthesis can be judged against what someone will actually do.
+ *
+ * Its own table rather than columns on `user`, which Better Auth owns and
+ * regenerates.
+ */
+export const profiles = pgTable('profiles', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  /** What gives them energy. */
+  energises: text('energises'),
+  /** What drains them, and so what a good action avoids. */
+  drains: text('drains'),
+  /** Where they are trying to get to. */
+  aspiration: text('aspiration'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+/**
  * A problem someone is working through. Owned by exactly one user.
  *
  * The 2024 schema modelled this as many-to-many via a `usersproblem` join and
@@ -139,6 +163,10 @@ export const problemVerbsRelations = relations(problemVerbs, ({ one }) => ({
     fields: [problemVerbs.actionVerbId],
     references: [actionVerbs.id],
   }),
+}))
+
+export const profilesRelations = relations(profiles, ({ one }) => ({
+  owner: one(user, { fields: [profiles.userId], references: [user.id] }),
 }))
 
 export const boardsRelations = relations(boards, ({ one }) => ({

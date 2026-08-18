@@ -6,8 +6,10 @@ import { z } from 'zod'
 import { db } from '#/db'
 import { boards, problems } from '#/db/schema'
 import { auth } from './auth.ts'
+import { fetchFrame } from './profile.ts'
 
 import type { BoardGraph } from './board-types.ts'
+import type { PersonalFrame } from './ai/frame.ts'
 
 const nodeSchema = z.object({
   id: z.string(),
@@ -32,6 +34,7 @@ export type BoardPayload = {
   verbs: Array<{ label: string; solution: string }>
   /** null when the board has never been arranged, so the caller seeds it. */
   data: BoardGraph | null
+  frame: PersonalFrame
 }
 
 async function requireUserId(): Promise<string> {
@@ -73,6 +76,7 @@ export const fetchBoard = createServerFn({ method: 'GET' })
       stored != null && Array.isArray(stored.nodes) && stored.nodes.length > 0
 
     return {
+      frame: await fetchFrame(),
       title: problem.title,
       exchanges: problem.exchanges,
       verbs: problem.verbs.map((v) => ({

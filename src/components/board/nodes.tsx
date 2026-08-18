@@ -234,10 +234,32 @@ export function ActionNode({ id, data }: NodeProps) {
   )
 }
 
+/** Context rather than a step, so it connects to nothing by default. */
+export function FrameNode({ id, data }: NodeProps) {
+  const d = data as Data
+  return (
+    <Shell
+      tone="border-rule bg-transparent"
+      hasSource={false}
+      hasTarget={false}
+    >
+      <p className="label-technical mb-1">{d.label}</p>
+      <EditableText
+        id={id}
+        field="detail"
+        value={d.detail ?? ''}
+        placeholder="…"
+        className="text-sm leading-snug"
+      />
+    </Shell>
+  )
+}
+
 export const nodeTypes = {
   problem: ProblemNode,
   why: WhyNode,
   verb: VerbNode,
   note: NoteNode,
   action: ActionNode,
+  frame: FrameNode,
 }

@@ -10,8 +10,10 @@ import {
   CardTitle,
 } from '#/components/ui/card'
 import { fetchMyProblems, fetchVerbStats } from '#/lib/problems'
+import { fetchFrame } from '#/lib/profile'
 import { VerbChart } from '#/components/stats/verb-chart'
 import { ProfileForm } from '#/components/account/profile-form'
+import { FrameForm } from '#/components/account/frame-form'
 
 import type { ProblemSummary } from '#/lib/problems'
 
@@ -19,6 +21,7 @@ export const Route = createFileRoute('/_authed/mon-compte')({
   loader: async () => ({
     problems: await fetchMyProblems(),
     verbs: await fetchVerbStats(),
+    frame: await fetchFrame(),
   }),
   component: Account,
 })
@@ -31,7 +34,7 @@ const dateFormat = new Intl.DateTimeFormat('fr-FR', {
 
 function Account() {
   const { user } = Route.useRouteContext()
-  const { problems, verbs } = Route.useLoaderData()
+  const { problems, verbs, frame } = Route.useLoaderData()
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-10 px-5 py-14">
@@ -54,6 +57,19 @@ function Account() {
             <p className="font-medium">{user.email}</p>
           </div>
           <ProfileForm name={user.name} image={user.image} />
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-none border-rule-strong shadow-none">
+        <CardHeader>
+          <CardTitle>Ce qui compte pour toi</CardTitle>
+          <CardDescription>
+            Facultatif, et ça change les conseils : les verbes d’action sont
+            choisis pour toi plutôt que dans l’absolu.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FrameForm frame={frame} />
         </CardContent>
       </Card>
 

@@ -47,6 +47,29 @@ describe('seedGraph', () => {
     expect(new Set(nodes.map((n) => n.id)).size).toBe(nodes.length)
   })
 
+  it('draws the personal frame beside the reasoning', () => {
+    const { nodes } = seedGraph('Ma problématique', EXCHANGES, VERBS, {
+      energises: 'écrire seul',
+      drains: 'les réunions',
+      aspiration: null,
+    })
+
+    const frames = nodes.filter((n) => n.type === 'frame')
+    // Only the two that were filled in.
+    expect(frames).toHaveLength(2)
+    expect(frames.map((f) => f.data.detail)).toEqual([
+      'écrire seul',
+      'les réunions',
+    ])
+    // Context, not a step: it hangs off nothing.
+    expect(frames.every((f) => f.position.x < 0)).toBe(true)
+  })
+
+  it('draws no frame column when nothing was filled in', () => {
+    const { nodes } = seedGraph('Ma problématique', EXCHANGES, VERBS)
+    expect(nodes.filter((n) => n.type === 'frame')).toHaveLength(0)
+  })
+
   it('carries the answer as node detail', () => {
     const { nodes } = seedGraph('Ma problématique', EXCHANGES, VERBS)
     const first = nodes.find((n) => n.id === 'why-1')

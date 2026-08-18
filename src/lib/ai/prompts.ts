@@ -1,6 +1,35 @@
 import { VERB_COUNT, WHY_COUNT } from './schemas.ts'
 
 import type { Exchange } from './schemas.ts'
+import type { PersonalFrame } from './frame.ts'
+
+/**
+ * The person the advice is for, when they have told us.
+ *
+ * The 2024 app collected exactly this on its board and never fed it to the
+ * model, so the three verbs were proposed for nobody in particular. An action
+ * someone will not do is not a solution, however sound the reasoning behind it.
+ */
+function framing(frame: PersonalFrame): string {
+  const lines = [
+    frame.energises && `Ce qui lui donne de l'énergie : ${frame.energises}`,
+    frame.drains && `Ce qui l'épuise : ${frame.drains}`,
+    frame.aspiration && `Ce vers quoi elle veut aller : ${frame.aspiration}`,
+  ].filter(Boolean)
+
+  if (lines.length === 0) return ''
+
+  return `
+
+La personne t'a dit ceci sur elle :
+${lines.join('\n')}
+
+Tiens-en compte : propose des actions qu'elle fera vraiment. Évite ce qui
+l'épuise quand une autre voie existe, appuie-toi sur ce qui lui donne de
+l'énergie, et oriente vers ce qu'elle vise. Si la meilleure action passe
+malgré tout par ce qu'elle n'aime pas, propose-la et rends-la aussi petite
+que possible.`
+}
 
 /**
  * Prompts for the five-whys engine.
@@ -66,7 +95,11 @@ vers une cause de fond plutôt que tourner en rond.`,
   }
 }
 
-export function synthesisPrompt(title: string, exchanges: Array<Exchange>) {
+export function synthesisPrompt(
+  title: string,
+  exchanges: Array<Exchange>,
+  frame: PersonalFrame,
+) {
   const transcript = exchanges
     .map(
       (e, i) => `${i + 1}. ${e.question}\n   → ${e.answer ?? '(sans réponse)'}`,
@@ -83,7 +116,7 @@ qu'elle était formulée au départ.
 Pour chaque verbe, propose l'action la plus utile à mettre en place :
 concrète, réalisable par la personne elle-même, dix mots maximum.
 Les ${VERB_COUNT} verbes doivent être distincts et couvrir des angles
-différents.`,
+différents.${framing(frame)}`,
     user: `Ma problématique : ${title}
 
 Les cinq pourquoi :

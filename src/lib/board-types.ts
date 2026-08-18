@@ -7,7 +7,8 @@
  */
 
 /** Seeded from the run, or added by the person while thinking. */
-export type BoardNodeKind = 'problem' | 'why' | 'verb' | 'note' | 'action'
+export type BoardNodeKind =
+  'problem' | 'why' | 'verb' | 'note' | 'action' | 'frame'
 
 export type BoardNode = {
   id: string

@@ -119,6 +119,51 @@ describe('synthesize', () => {
   })
 })
 
+describe('the personal frame', () => {
+  const verbs = [
+    { verb: 'a', solution: 'A' },
+    { verb: 'b', solution: 'B' },
+    { verb: 'c', solution: 'C' },
+  ]
+
+  it('reaches the model when the person has filled it in', async () => {
+    const { client, calls } = fakeClient({ parsed_output: { verbs } })
+    await synthesize(client, 'Ma problématique', EXCHANGES, {
+      energises: 'écrire seul le matin',
+      drains: 'les réunions à six personnes',
+      aspiration: 'travailler en autonomie',
+    })
+
+    const system = calls[0].system as string
+    expect(system).toContain('écrire seul le matin')
+    expect(system).toContain('les réunions à six personnes')
+    expect(system).toContain('travailler en autonomie')
+  })
+
+  it('says nothing about the person when they have told us nothing', async () => {
+    const { client, calls } = fakeClient({ parsed_output: { verbs } })
+    await synthesize(client, 'Ma problématique', EXCHANGES)
+
+    // No dangling "the person told you this" section with empty bullets.
+    expect(calls[0].system).not.toContain('t’a dit ceci')
+    expect(calls[0].system).not.toContain("t'a dit ceci")
+  })
+
+  it('includes only the parts that were filled in', async () => {
+    const { client, calls } = fakeClient({ parsed_output: { verbs } })
+    await synthesize(client, 'Ma problématique', EXCHANGES, {
+      energises: null,
+      drains: 'les réunions',
+      aspiration: null,
+    })
+
+    const system = calls[0].system as string
+    expect(system).toContain('les réunions')
+    expect(system).not.toContain("donne de l'énergie :")
+    expect(system).not.toContain('veut aller :')
+  })
+})
+
 describe('failure handling', () => {
   it('raises RefusedError before touching the body', async () => {
     const { client } = fakeClient({

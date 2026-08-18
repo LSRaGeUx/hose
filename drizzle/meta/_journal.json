@@ -8,6 +8,13 @@
       "when": 1786973810906,
       "tag": "0000_wild_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787060229055,
+      "tag": "0001_yielding_scarecrow",
+      "breakpoints": true
     }
   ]
 }

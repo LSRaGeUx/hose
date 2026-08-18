@@ -20,7 +20,8 @@ function Board() {
   // A board that has never been arranged is seeded from the run itself, so it
   // opens containing the person's own reasoning rather than an empty canvas.
   const graph: BoardGraph =
-    board.data ?? seedGraph(board.title, board.exchanges, board.verbs)
+    board.data ??
+    seedGraph(board.title, board.exchanges, board.verbs, board.frame)
 
   const onSave = useCallback(
     async (next: BoardGraph) => {

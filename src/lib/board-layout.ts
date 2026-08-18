@@ -1,4 +1,5 @@
 import type { BoardGraph } from './board-types.ts'
+import type { PersonalFrame } from './ai/frame.ts'
 
 const COLUMN_X = 0
 const VERB_SPACING = 320
@@ -16,6 +17,7 @@ export function seedGraph(
   title: string,
   exchanges: Array<{ question: string; answer: string | null }>,
   verbs: Array<{ label: string; solution: string }>,
+  frame?: PersonalFrame,
 ): BoardGraph {
   const nodes: BoardGraph['nodes'] = [
     {
@@ -62,6 +64,27 @@ export function seedGraph(
       target: id,
     })
   })
+
+  // The constraints the verbs were judged against, drawn beside the reasoning
+  // rather than hidden in the account page. This is the column the 2024 board
+  // drew as "Ce que j'aime faire" and friends, except now it is the same data
+  // the model actually used.
+  const framing: Array<[string, string | null | undefined]> = [
+    ['Ce qui me donne de l’énergie', frame?.energises],
+    ['Ce qui m’épuise', frame?.drains],
+    ['Ce vers quoi je vais', frame?.aspiration],
+  ]
+
+  framing
+    .filter(([, value]) => Boolean(value))
+    .forEach(([label, value], i) => {
+      nodes.push({
+        id: `frame-${i + 1}`,
+        type: 'frame',
+        position: { x: COLUMN_X - 420, y: i * ROW_HEIGHT + ROW_HEIGHT },
+        data: { label, detail: value ?? undefined },
+      })
+    })
 
   return { nodes, edges }
 }
