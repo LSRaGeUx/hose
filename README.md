@@ -15,7 +15,14 @@ Application en français. Construite avec TanStack Start, Postgres et Claude.
 > Projet de portfolio. L'app tourne en local, contre un Postgres local et ta
 > propre clé Claude. Il n'y a pas d'instance déployée.
 
-![Un parcours complet en mode Auto, de la problématique au tableau](docs/demo.gif)
+![Un parcours complet en mode Auto, de la problématique au tableau](docs/captures/demo.gif)
+
+## Documentation
+
+Comment l’app est construite, et pourquoi elle l’est comme ça :
+[`docs/`](docs/README.md). Architecture, modèle de données, moteur d’IA,
+sécurité, tableau, tests, et quatorze décisions structurantes avec leur
+contexte et leur coût.
 
 ## Le principe
 
@@ -38,56 +45,56 @@ direct. Rien n'est simulé.
 dans une modale. La première chose que tu vois est le champ que tu es venu
 remplir.
 
-![Page d'accueil avec le champ problématique](docs/01-accueil.jpg)
+![Page d'accueil avec le champ problématique](docs/captures/01-accueil.jpg)
 
 **2 · Tu choisis comment tu veux être accompagné.** Assisté par défaut ; Auto
 est là pour quand tu ne sais pas encore ce que la méthode peut donner.
 
-![Problématique saisie, avec les deux modes](docs/02-accueil-rempli.jpg)
+![Problématique saisie, avec les deux modes](docs/captures/02-accueil-rempli.jpg)
 
 **3 · En Assisté, une question à la fois.** Chaque réponse nourrit la question
 suivante, donc la chaîne suit ton raisonnement plutôt qu'un script. Toute
 question peut être remplacée par une autre, et toute réponse corrigée après
 coup.
 
-![Mode assisté, deux échanges plus loin](docs/08-mode-assiste.jpg)
+![Mode assisté, deux échanges plus loin](docs/captures/08-mode-assiste.jpg)
 
 **4 · La chaîne aboutit à trois verbes d'action.** Chaque verbe vient avec une
 chose concrète à faire, et le conseil est écrit en fonction de ton profil : ce
 qui te donne de l'énergie, ce qui t'épuise, ce vers quoi tu vas.
 
-![Les cinq pourquoi et les trois verbes](docs/04-chaine-et-verbes.jpg)
+![Les cinq pourquoi et les trois verbes](docs/captures/04-chaine-et-verbes.jpg)
 
 **5 · Puis tu t'engages sur un seul.** Le modèle propose un premier pas concret
 et daté pour le verbe choisi. Tu le retouches jusqu'à ce qu'il soit juste, puis
 tu t'engages.
 
-![L'étape d'engagement](docs/05-engagement.jpg)
+![L'étape d'engagement](docs/captures/05-engagement.jpg)
 
 **6 · Le tableau t'appartient.** Il s'ouvre avec le raisonnement déjà disposé,
 ton profil dans la colonne de gauche et l'action engagée en bas. À partir de là
 c'est un canevas : déplace, relie, ajoute des notes et des actions, annule.
 Tout est enregistré au fil de l'eau.
 
-![Le tableau](docs/07-tableau.jpg)
+![Le tableau](docs/captures/07-tableau.jpg)
 
 **7 · Mon compte garde l'historique.** Chaque parcours, les verbes produits, ce
 sur quoi tu t'es engagé, et la fréquence de chaque verbe sur l'ensemble de tes
 problématiques.
 
-![Mon compte](docs/06-mon-compte.jpg)
+![Mon compte](docs/captures/06-mon-compte.jpg)
 
 ## Le reste
 
-|                                     |                                                   |
-| ----------------------------------- | ------------------------------------------------- |
-| ![Connexion](docs/10-connexion.jpg) | ![Inscription](docs/11-inscription.jpg)           |
-| ![Contact](docs/12-contact.jpg)     | ![Page introuvable](docs/13-page-introuvable.jpg) |
+|                                              |                                                            |
+| -------------------------------------------- | ---------------------------------------------------------- |
+| ![Connexion](docs/captures/10-connexion.jpg) | ![Inscription](docs/captures/11-inscription.jpg)           |
+| ![Contact](docs/captures/12-contact.jpg)     | ![Page introuvable](docs/captures/13-page-introuvable.jpg) |
 
 Le thème sombre est conçu, pas inversé ; le contraste a été vérifié sur les
 deux fonds.
 
-![Thème sombre](docs/09-mode-assiste-sombre.jpg)
+![Thème sombre](docs/captures/09-mode-assiste-sombre.jpg)
 
 ## Stack
 

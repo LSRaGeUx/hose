@@ -15,7 +15,13 @@ French-language app. Built with TanStack Start, Postgres and Claude.
 > Portfolio project. It runs locally against a local Postgres and your own
 > Claude key. There is no deployed instance.
 
-![A full run in Auto mode, from the problem to the tableau](docs/demo.gif)
+![A full run in Auto mode, from the problem to the tableau](docs/captures/demo.gif)
+
+## Documentation
+
+How the app is built and why, in French: [`docs/`](docs/README.md).
+Architecture, data model, AI engine, security, board, testing, and fourteen
+decision records with their context and their cost.
 
 ## How it works
 
@@ -36,54 +42,54 @@ Every screenshot below is a real run against the live model. Nothing is mocked.
 **1 · The problem goes on the landing page.** Not behind a button, not in a
 modal. The first thing you see is the field you came to fill in.
 
-![Landing page with the problem field](docs/01-accueil.jpg)
+![Landing page with the problem field](docs/captures/01-accueil.jpg)
 
 **2 · You pick how you want to be walked through it.** Assisté by default; Auto
 is there for when you do not yet know what to expect from the method.
 
-![Problem filled in, with the two modes](docs/02-accueil-rempli.jpg)
+![Problem filled in, with the two modes](docs/captures/02-accueil-rempli.jpg)
 
 **3 · In Assisté, one question at a time.** Each answer feeds the next
 question, so the chain follows your reasoning rather than a script. Any
 question can be swapped for another, and any answer can be edited after the
 fact.
 
-![Assisté mode, two exchanges deep](docs/08-mode-assiste.jpg)
+![Assisté mode, two exchanges deep](docs/captures/08-mode-assiste.jpg)
 
 **4 · The chain ends in three action verbs.** Each verb comes with one concrete
 thing to do, and the advice is written against your own profile: what gives you
 energy, what drains you, where you are trying to get to.
 
-![The five whys and the three verbs](docs/04-chaine-et-verbes.jpg)
+![The five whys and the three verbs](docs/captures/04-chaine-et-verbes.jpg)
 
 **5 · Then you commit to exactly one.** The model proposes a dated, concrete
 first step for the verb you chose. You edit it until it is true, then commit.
 
-![The commitment step](docs/05-engagement.jpg)
+![The commitment step](docs/captures/05-engagement.jpg)
 
 **6 · The tableau is yours to change.** It opens with the reasoning already
 laid out, your profile in the left column and the committed action at the
 bottom. From there it is a canvas: move things, connect them, add notes and
 actions, undo. Everything saves as you go.
 
-![The tableau](docs/07-tableau.jpg)
+![The tableau](docs/captures/07-tableau.jpg)
 
 **7 · Mon compte keeps the history.** Every run, the verbs it produced, what
 you committed to, and how often each verb has come up across all your problems.
 
-![Mon compte](docs/06-mon-compte.jpg)
+![Mon compte](docs/captures/06-mon-compte.jpg)
 
 ## The rest of it
 
-|                                   |                                            |
-| --------------------------------- | ------------------------------------------ |
-| ![Sign in](docs/10-connexion.jpg) | ![Sign up](docs/11-inscription.jpg)        |
-| ![Contact](docs/12-contact.jpg)   | ![Not found](docs/13-page-introuvable.jpg) |
+|                                            |                                                     |
+| ------------------------------------------ | --------------------------------------------------- |
+| ![Sign in](docs/captures/10-connexion.jpg) | ![Sign up](docs/captures/11-inscription.jpg)        |
+| ![Contact](docs/captures/12-contact.jpg)   | ![Not found](docs/captures/13-page-introuvable.jpg) |
 
 Dark mode is designed rather than inverted; both surfaces were checked for
 contrast.
 
-![Dark mode](docs/09-mode-assiste-sombre.jpg)
+![Dark mode](docs/captures/09-mode-assiste-sombre.jpg)
 
 ## Stack
 
