@@ -2,15 +2,17 @@
 
 _[English version](README.en.md)_
 
+[![CI](https://github.com/LSRaGeUx/hose/actions/workflows/ci.yml/badge.svg)](https://github.com/LSRaGeUx/hose/actions/workflows/ci.yml)
+
 Challenge ta problématique. Tu écris ce qui te bloque, même mal formulé, et Hose
 le déroule avec toi selon la **méthode des cinq pourquoi**. À la fin : trois
 verbes d'action, chacun accompagné d'une chose concrète à faire.
 
 Application en français. Construite avec TanStack Start, Postgres et Claude.
 
-> Réécriture d'un projet de 2024. L'original est archivé sur
-> [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive) ; rien
-> n'en a été repris, à part l'idée.
+> Réécriture d'un projet de 2024. L'original est archivé et gardé privé : des
+> identifiants ont été committés dans son historique à l'époque, et le rendre
+> public les exposerait. Rien n'en a été repris, à part l'idée.
 
 > Projet de portfolio. L'app tourne en local, contre un Postgres local et ta
 > propre clé Claude. Il n'y a pas d'instance déployée.

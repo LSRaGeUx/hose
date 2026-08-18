@@ -2,15 +2,17 @@
 
 _[Version française](README.md)_
 
+[![CI](https://github.com/LSRaGeUx/hose/actions/workflows/ci.yml/badge.svg)](https://github.com/LSRaGeUx/hose/actions/workflows/ci.yml)
+
 Challenge ta problématique. You type a problem you are stuck on, however badly
 phrased, and Hose walks it through the **five whys** with you. It ends with
 three action verbs, each paired with one concrete thing you could do.
 
 French-language app. Built with TanStack Start, Postgres and Claude.
 
-> This is a rewrite of a 2024 project. The original is archived at
-> [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive); nothing
-> from it was carried over except the idea.
+> This is a rewrite of a 2024 project. The original is archived and kept
+> private: credentials were committed to its history at the time, and making it
+> public would expose them. Nothing was carried over except the idea.
 
 > Portfolio project. It runs locally against a local Postgres and your own
 > Claude key. There is no deployed instance.
