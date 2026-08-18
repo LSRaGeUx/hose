@@ -9,12 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card'
-import { fetchMyProblems } from '#/lib/problems'
+import { fetchMyProblems, fetchVerbStats } from '#/lib/problems'
+import { VerbChart } from '#/components/stats/verb-chart'
 
 import type { ProblemSummary } from '#/lib/problems'
 
 export const Route = createFileRoute('/_authed/mon-compte')({
-  loader: () => fetchMyProblems(),
+  loader: async () => ({
+    problems: await fetchMyProblems(),
+    verbs: await fetchVerbStats(),
+  }),
   component: Account,
 })
 
@@ -26,7 +30,7 @@ const dateFormat = new Intl.DateTimeFormat('fr-FR', {
 
 function Account() {
   const { user } = Route.useRouteContext()
-  const problems = Route.useLoaderData()
+  const { problems, verbs } = Route.useLoaderData()
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12">
@@ -52,6 +56,18 @@ function Account() {
               <dd className="font-medium">{user.email}</dd>
             </div>
           </dl>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Mes verbes d’action</CardTitle>
+          <CardDescription>
+            Ce qui revient le plus souvent dans tes réflexions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <VerbChart verbs={verbs} />
         </CardContent>
       </Card>
 

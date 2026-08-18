@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as ConnexionRouteImport } from './routes/connexion'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as InscriptionRouteImport } from './routes/inscription'
 import { Route as AuthedMonCompteRouteImport } from './routes/_authed/mon-compte'
 import { Route as AuthedReflexionRouteImport } from './routes/_authed/reflexion'
@@ -30,6 +31,11 @@ const AuthedRoute = AuthedRouteImport.update({
 const ConnexionRoute = ConnexionRouteImport.update({
   id: '/connexion',
   path: '/connexion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InscriptionRoute = InscriptionRouteImport.update({
@@ -61,6 +67,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/connexion': typeof ConnexionRoute
+  '/contact': typeof ContactRoute
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
   '/reflexion': typeof AuthedReflexionRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/connexion': typeof ConnexionRoute
+  '/contact': typeof ContactRoute
   '/inscription': typeof InscriptionRoute
   '/mon-compte': typeof AuthedMonCompteRoute
   '/reflexion': typeof AuthedReflexionRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/connexion': typeof ConnexionRoute
+  '/contact': typeof ContactRoute
   '/inscription': typeof InscriptionRoute
   '/_authed/mon-compte': typeof AuthedMonCompteRoute
   '/_authed/reflexion': typeof AuthedReflexionRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/connexion'
+    | '/contact'
     | '/inscription'
     | '/mon-compte'
     | '/reflexion'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/connexion'
+    | '/contact'
     | '/inscription'
     | '/mon-compte'
     | '/reflexion'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authed'
     | '/connexion'
+    | '/contact'
     | '/inscription'
     | '/_authed/mon-compte'
     | '/_authed/reflexion'
@@ -122,6 +134,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   ConnexionRoute: typeof ConnexionRoute
+  ContactRoute: typeof ContactRoute
   InscriptionRoute: typeof InscriptionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -147,6 +160,13 @@ declare module '@tanstack/react-router' {
       path: '/connexion'
       fullPath: '/connexion'
       preLoaderRoute: typeof ConnexionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inscription': {
@@ -206,6 +226,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   ConnexionRoute: ConnexionRoute,
+  ContactRoute: ContactRoute,
   InscriptionRoute: InscriptionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

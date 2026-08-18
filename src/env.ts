@@ -29,6 +29,14 @@ export const env = createEnv({
      * touch. The shape is still checked at point of use in src/lib/ai/client.ts.
      */
     HOSE_ANTHROPIC_API_KEY: z.string().min(1).optional(),
+
+    /**
+     * Resend credentials for the contact form. Optional: without them the form
+     * refuses cleanly rather than pretending to have sent something.
+     */
+    RESEND_API_KEY: z.string().min(1).optional(),
+    CONTACT_FROM: z.string().email().optional(),
+    CONTACT_TO: z.string().email().optional(),
   },
 
   /**

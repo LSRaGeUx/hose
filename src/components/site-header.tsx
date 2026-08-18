@@ -31,6 +31,9 @@ export function SiteHeader() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/contact">Contact</Link>
+          </Button>
           {user ? (
             <>
               <Button asChild variant="ghost" size="sm">

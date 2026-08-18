@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { asc, desc, eq } from 'drizzle-orm'
+import { asc, count, desc, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { db } from '#/db'
@@ -133,3 +133,36 @@ export const saveRun = createServerFn({ method: 'POST' })
       return { problemId: problem.id }
     })
   })
+
+export type VerbCount = { label: string; count: number }
+
+/**
+ * How often each action verb has come up across the signed-in user's problems.
+ *
+ * Aggregated in SQL rather than by pulling every row and counting in JS. The
+ * 2024 endpoint (/getAllVerbsByProblems) issued one query per problem inside a
+ * loop and called res.json from within it, so any failure mid-loop sent a
+ * second response.
+ */
+export const fetchVerbStats = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<Array<VerbCount>> => {
+    const session = await auth.api.getSession({
+      headers: getRequest().headers,
+    })
+    if (!session?.user) return []
+
+    const rows = await db
+      .select({
+        label: actionVerbs.label,
+        count: count(problemVerbs.actionVerbId),
+      })
+      .from(problemVerbs)
+      .innerJoin(actionVerbs, eq(actionVerbs.id, problemVerbs.actionVerbId))
+      .innerJoin(problems, eq(problems.id, problemVerbs.problemId))
+      .where(eq(problems.userId, session.user.id))
+      .groupBy(actionVerbs.label)
+      .orderBy(desc(count(problemVerbs.actionVerbId)), asc(actionVerbs.label))
+
+    return rows.map((r) => ({ label: r.label, count: Number(r.count) }))
+  },
+)
