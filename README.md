@@ -1,173 +1,185 @@
 # Hose
 
-Challenge ta problématique. You type a problem you are stuck on, however badly
-phrased, and Hose walks it through the **five whys** with you. It ends with
-three action verbs, each paired with one concrete thing you could do.
+_[English version](README.en.md)_
 
-French-language app. Built with TanStack Start, Postgres and Claude.
+Challenge ta problématique. Tu écris ce qui te bloque, même mal formulé, et Hose
+le déroule avec toi selon la **méthode des cinq pourquoi**. À la fin : trois
+verbes d'action, chacun accompagné d'une chose concrète à faire.
 
-> This is a rewrite of a 2024 project. The original is archived at
-> [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive); nothing
-> from it was carried over except the idea.
+Application en français. Construite avec TanStack Start, Postgres et Claude.
 
-> Portfolio project. It runs locally against a local Postgres and your own
-> Claude key. There is no deployed instance.
+> Réécriture d'un projet de 2024. L'original est archivé sur
+> [`hose-2024-archive`](https://github.com/LSRaGeUx/hose-2024-archive) ; rien
+> n'en a été repris, à part l'idée.
 
-![A full run in Auto mode, from the problem to the tableau](docs/demo.gif)
+> Projet de portfolio. L'app tourne en local, contre un Postgres local et ta
+> propre clé Claude. Il n'y a pas d'instance déployée.
 
-## How it works
+![Un parcours complet en mode Auto, de la problématique au tableau](docs/demo.gif)
 
-Two modes, both ending at the same place.
+## Le principe
 
-- **Assisté** asks one "pourquoi ?" at a time and waits for your real answer.
-- **Auto** runs the whole chain unattended so you can react to the result.
+Deux modes, une même destination.
 
-Both converge on a synthesis step that produces the three verbs. From there the
-run is saved and you get a **tableau**: a canvas that opens already containing
-your own reasoning, the problem at the top, the five whys descending, the verbs
-fanning out at the bottom.
+- **Assisté** pose un « pourquoi ? » à la fois et attend ta vraie réponse.
+- **Auto** déroule toute la chaîne sans toi, pour que tu réagisses au résultat.
 
-## A run, end to end
+Les deux convergent vers une synthèse qui produit les trois verbes. Le parcours
+est alors enregistré et tu obtiens un **tableau** : un canevas qui s'ouvre en
+contenant déjà ton propre raisonnement, la problématique en haut, les cinq
+pourquoi qui descendent, les verbes en éventail en bas.
 
-Every screenshot below is a real run against the live model. Nothing is mocked.
+## Un parcours, de bout en bout
 
-**1 · The problem goes on the landing page.** Not behind a button, not in a
-modal. The first thing you see is the field you came to fill in.
+Toutes les captures ci-dessous viennent d'un vrai parcours contre le modèle en
+direct. Rien n'est simulé.
 
-![Landing page with the problem field](docs/01-accueil.jpg)
+**1 · La problématique est sur la page d'accueil.** Pas derrière un bouton, pas
+dans une modale. La première chose que tu vois est le champ que tu es venu
+remplir.
 
-**2 · You pick how you want to be walked through it.** Assisté by default; Auto
-is there for when you do not yet know what to expect from the method.
+![Page d'accueil avec le champ problématique](docs/01-accueil.jpg)
 
-![Problem filled in, with the two modes](docs/02-accueil-rempli.jpg)
+**2 · Tu choisis comment tu veux être accompagné.** Assisté par défaut ; Auto
+est là pour quand tu ne sais pas encore ce que la méthode peut donner.
 
-**3 · In Assisté, one question at a time.** Each answer feeds the next
-question, so the chain follows your reasoning rather than a script. Any
-question can be swapped for another, and any answer can be edited after the
-fact.
+![Problématique saisie, avec les deux modes](docs/02-accueil-rempli.jpg)
 
-![Assisté mode, two exchanges deep](docs/08-mode-assiste.jpg)
+**3 · En Assisté, une question à la fois.** Chaque réponse nourrit la question
+suivante, donc la chaîne suit ton raisonnement plutôt qu'un script. Toute
+question peut être remplacée par une autre, et toute réponse corrigée après
+coup.
 
-**4 · The chain ends in three action verbs.** Each verb comes with one concrete
-thing to do, and the advice is written against your own profile: what gives you
-energy, what drains you, where you are trying to get to.
+![Mode assisté, deux échanges plus loin](docs/08-mode-assiste.jpg)
 
-![The five whys and the three verbs](docs/04-chaine-et-verbes.jpg)
+**4 · La chaîne aboutit à trois verbes d'action.** Chaque verbe vient avec une
+chose concrète à faire, et le conseil est écrit en fonction de ton profil : ce
+qui te donne de l'énergie, ce qui t'épuise, ce vers quoi tu vas.
 
-**5 · Then you commit to exactly one.** The model proposes a dated, concrete
-first step for the verb you chose. You edit it until it is true, then commit.
+![Les cinq pourquoi et les trois verbes](docs/04-chaine-et-verbes.jpg)
 
-![The commitment step](docs/05-engagement.jpg)
+**5 · Puis tu t'engages sur un seul.** Le modèle propose un premier pas concret
+et daté pour le verbe choisi. Tu le retouches jusqu'à ce qu'il soit juste, puis
+tu t'engages.
 
-**6 · The tableau is yours to change.** It opens with the reasoning already
-laid out, your profile in the left column and the committed action at the
-bottom. From there it is a canvas: move things, connect them, add notes and
-actions, undo. Everything saves as you go.
+![L'étape d'engagement](docs/05-engagement.jpg)
 
-![The tableau](docs/07-tableau.jpg)
+**6 · Le tableau t'appartient.** Il s'ouvre avec le raisonnement déjà disposé,
+ton profil dans la colonne de gauche et l'action engagée en bas. À partir de là
+c'est un canevas : déplace, relie, ajoute des notes et des actions, annule.
+Tout est enregistré au fil de l'eau.
 
-**7 · Mon compte keeps the history.** Every run, the verbs it produced, what
-you committed to, and how often each verb has come up across all your problems.
+![Le tableau](docs/07-tableau.jpg)
+
+**7 · Mon compte garde l'historique.** Chaque parcours, les verbes produits, ce
+sur quoi tu t'es engagé, et la fréquence de chaque verbe sur l'ensemble de tes
+problématiques.
 
 ![Mon compte](docs/06-mon-compte.jpg)
 
-## The rest of it
+## Le reste
 
-|                                   |                                            |
-| --------------------------------- | ------------------------------------------ |
-| ![Sign in](docs/10-connexion.jpg) | ![Sign up](docs/11-inscription.jpg)        |
-| ![Contact](docs/12-contact.jpg)   | ![Not found](docs/13-page-introuvable.jpg) |
+|                                     |                                                   |
+| ----------------------------------- | ------------------------------------------------- |
+| ![Connexion](docs/10-connexion.jpg) | ![Inscription](docs/11-inscription.jpg)           |
+| ![Contact](docs/12-contact.jpg)     | ![Page introuvable](docs/13-page-introuvable.jpg) |
 
-Dark mode is designed rather than inverted; both surfaces were checked for
-contrast.
+Le thème sombre est conçu, pas inversé ; le contraste a été vérifié sur les
+deux fonds.
 
-![Dark mode](docs/09-mode-assiste-sombre.jpg)
+![Thème sombre](docs/09-mode-assiste-sombre.jpg)
 
 ## Stack
 
-|           |                                                                               |
-| --------- | ----------------------------------------------------------------------------- |
-| Framework | [TanStack Start](https://tanstack.com/start) (React 19, Vite, TypeScript)     |
-| Database  | Postgres via [Drizzle](https://orm.drizzle.team/), local through podman       |
-| Auth      | [Better Auth](https://www.better-auth.com), email and password                |
-| AI        | [Claude](https://www.anthropic.com) (`claude-opus-5`) with structured outputs |
-| Canvas    | [React Flow](https://reactflow.dev)                                           |
-| UI        | Tailwind 4, shadcn/ui                                                         |
-| Tests     | Vitest, Playwright                                                            |
+|                 |                                                                            |
+| --------------- | -------------------------------------------------------------------------- |
+| Framework       | [TanStack Start](https://tanstack.com/start) (React 19, Vite, TypeScript)  |
+| Base de données | Postgres via [Drizzle](https://orm.drizzle.team/), en local via podman     |
+| Auth            | [Better Auth](https://www.better-auth.com), e-mail et mot de passe         |
+| IA              | [Claude](https://www.anthropic.com) (`claude-opus-5`), sorties structurées |
+| Canevas         | [React Flow](https://reactflow.dev)                                        |
+| UI              | Tailwind 4, shadcn/ui                                                      |
+| Tests           | Vitest, Playwright                                                         |
 
-## Running it
+## Lancer le projet
 
-Requires Node 22+ and podman (or Docker, if you adjust `compose.yaml`).
+Nécessite Node 22+ et podman (ou Docker, si tu adaptes `compose.yaml`).
 
 ```bash
 npm install
-cp .env.example .env.local     # then fill it in
-npm run db:up                  # Postgres 17 on localhost:5432
+cp .env.example .env.local     # puis remplis-le
+npm run db:up                  # Postgres 17 sur localhost:5432
 npm run db:migrate
-npm run db:seed                # optional: one account, two worked-through problems
+npm run db:seed                # optionnel : un compte, deux problématiques traitées
 npm run dev
 ```
 
-The seed account is `test@hose.local` / `hose-dev-password`.
+Le compte de démo est `test@hose.local` / `hose-dev-password`.
 
-The only credential you need for the core feature is `HOSE_ANTHROPIC_API_KEY`.
-The contact form stays disabled without its Resend keys and says so rather than
-pretending to send.
+La seule clé nécessaire à la fonctionnalité principale est
+`HOSE_ANTHROPIC_API_KEY`. Le formulaire de contact reste désactivé sans ses
+clés Resend, et le dit au lieu de faire semblant d'envoyer.
 
-### Why `HOSE_ANTHROPIC_API_KEY` and not `ANTHROPIC_API_KEY`
+### Pourquoi `HOSE_ANTHROPIC_API_KEY` et pas `ANTHROPIC_API_KEY`
 
-Netlify's Vite plugin claims `ANTHROPIC_API_KEY` for its own AI Gateway and
-writes a site-scoped token into `process.env` when it loads, overwriting
-whatever you set. Ours uses a name nothing else takes. The client also pins
-`baseURL`, because the SDK otherwise inherits `ANTHROPIC_BASE_URL` from the
-environment and calls get proxied to that gateway, which rejects your key.
+Le plugin Vite de Netlify s'approprie `ANTHROPIC_API_KEY` pour son propre AI
+Gateway et écrit un token lié au site dans `process.env` au chargement, en
+écrasant ce que tu as défini. Le nôtre porte un nom que rien d'autre ne prend.
+Le client fixe aussi `baseURL`, sans quoi le SDK hérite de `ANTHROPIC_BASE_URL`
+depuis l'environnement et les appels partent vers ce gateway, qui rejette ta
+clé.
 
-## Commands
+## Commandes
 
-|                                                                |                             |
-| -------------------------------------------------------------- | --------------------------- |
-| `npm run dev`                                                  | dev server on :3000         |
-| `npm run db:up` / `db:down` / `db:nuke`                        | local Postgres              |
-| `npm run db:generate` / `db:migrate` / `db:seed` / `db:studio` | schema and data             |
-| `npm test`                                                     | unit tests                  |
-| `npm run test:e2e`                                             | Playwright, on its own port |
-| `npm run lint` / `format` / `check`                            | eslint and prettier         |
+|                                                                |                                 |
+| -------------------------------------------------------------- | ------------------------------- |
+| `npm run dev`                                                  | serveur de dev sur :3000        |
+| `npm run db:up` / `db:down` / `db:nuke`                        | Postgres local                  |
+| `npm run db:generate` / `db:migrate` / `db:seed` / `db:studio` | schéma et données               |
+| `npm test`                                                     | tests unitaires                 |
+| `npm run test:e2e`                                             | Playwright, sur son propre port |
+| `npm run lint` / `format` / `check`                            | eslint et prettier              |
 
-## Notes on the design
+## Notes de conception
 
-A few decisions worth knowing about, since they are the difference between this
-and the version it replaces.
+Quelques décisions qui valent d'être connues, puisque ce sont elles qui font la
+différence avec la version remplacée.
 
-**The model's output shape is enforced, not requested.** Responses come back
-through structured outputs against a schema, so there is no regex, no
-`JSON.parse` and no repair step anywhere in the app. Counts are the exception:
-the API does not enforce array lengths, so the engine states them in the prompt
-and retries with the validation error fed back in.
+**La forme des réponses du modèle est imposée, pas demandée.** Les réponses
+reviennent par les sorties structurées, validées contre un schéma : aucune
+regex, aucun `JSON.parse`, aucune étape de réparation nulle part dans l'app.
+Les cardinalités font exception : l'API ne fait pas respecter la longueur des
+tableaux, donc le moteur l'énonce dans le prompt et réessaie en réinjectant
+l'erreur de validation.
 
-**Authorization is decided on the server, in the query.** Ownership is part of
-the `WHERE` clause, so another user's problem is not found rather than found
-and then refused. Route guards run in `beforeLoad`, so a signed-out request is
-redirected before any markup is produced.
+**L'autorisation est décidée côté serveur, dans la requête.** L'appartenance
+fait partie du `WHERE`, donc la problématique d'un autre utilisateur n'est pas
+trouvée, plutôt que trouvée puis refusée. Les gardes de route s'exécutent dans
+`beforeLoad`, donc une requête déconnectée est redirigée avant qu'aucun markup
+ne soit produit.
 
-**A run is saved in one transaction, only once it is complete.** An abandoned
-conversation leaves nothing behind, and a partial run cannot be written.
+**Un parcours est enregistré en une seule transaction, et seulement une fois
+complet.** Une conversation abandonnée ne laisse rien derrière elle, et un
+parcours partiel ne peut pas être écrit.
 
-**The chart is one colour.** Every bar measures the same thing, so it is a
-single series; a colour per verb would imply a distinction that does not exist.
-The hue was validated against both light and dark surfaces rather than picked
-by eye.
+**Le graphique est monochrome.** Chaque barre mesure la même chose, c'est donc
+une série unique ; une couleur par verbe suggérerait une distinction qui
+n'existe pas. La teinte a été validée sur les fonds clair et sombre plutôt que
+choisie à l'œil.
 
 ## Tests
 
-Unit tests cover the five-whys engine against a fake client, so the suite never
-spends API tokens or waits on model latency. Playwright covers sign-up, the
-server-side guard, sign-out and the not-found state.
+Les tests unitaires couvrent le moteur des cinq pourquoi contre un client
+factice, donc la suite ne consomme jamais de tokens et n'attend jamais la
+latence du modèle. Playwright couvre l'inscription, la garde côté serveur, la
+déconnexion et l'état « page introuvable ».
 
-Unit tests run in CI against a real Postgres service. The end-to-end suite is a
-local command for now: it fails on CI's cold dev server in a way that looks
-like hydration not completing, and making it pass by loosening assertions would
-defeat the point.
+Les tests unitaires tournent en CI contre un vrai Postgres. La suite end-to-end
+reste une commande locale pour l'instant : elle échoue sur le serveur de dev à
+froid de la CI, d'une façon qui ressemble à une hydratation qui ne se termine
+pas, et la faire passer en relâchant les assertions viderait l'exercice de son
+sens.
 
 ## Licence
 
-GNU General Public License. See [LICENSE](LICENSE).
+GNU General Public License. Voir [LICENSE](LICENSE).
