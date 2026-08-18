@@ -78,7 +78,8 @@ test('sign up, land on the account page, sign out', async ({ page }) => {
 
   await clickUntil(
     page.getByRole('button', { name: 'Se déconnecter' }),
-    page.getByRole('link', { name: 'Se connecter' }),
+    // Scoped to the header: the signed-out home page also links to sign-in.
+    page.getByRole('banner').getByRole('link', { name: 'Se connecter' }),
   )
 })
 
@@ -113,7 +114,8 @@ test('a wrong password is refused', async ({ page }) => {
   )
   await clickUntil(
     page.getByRole('button', { name: 'Se déconnecter' }),
-    page.getByRole('link', { name: 'Se connecter' }),
+    // Scoped to the header: the signed-out home page also links to sign-in.
+    page.getByRole('banner').getByRole('link', { name: 'Se connecter' }),
   )
 
   await page.goto('/connexion')
@@ -123,6 +125,34 @@ test('a wrong password is refused', async ({ page }) => {
     page.getByRole('button', { name: 'Se connecter' }),
     page.getByText('Adresse e-mail ou mot de passe incorrect.'),
   )
+})
+
+test('a run URL survives the sign-in detour with its problem intact', async ({
+  page,
+}) => {
+  // What the home page produces when a signed-out visitor submits. Asserted by
+  // navigation rather than by clicking, so the check is about the guard rather
+  // than about whether a click beat hydration.
+  await page.goto('/reflexion?probleme=Je+teste+le+parcours&mode=auto')
+
+  await expect(page).toHaveURL(/\/connexion\?redirect=/)
+
+  const redirect = new URL(page.url()).searchParams.get('redirect') ?? ''
+  expect(redirect).toContain('/reflexion')
+
+  // URLSearchParams, not decodeURIComponent: the query is form-encoded, so
+  // spaces are '+' and only a real parser turns them back into spaces.
+  const carried = new URLSearchParams(redirect.split('?')[1] ?? '')
+  expect(carried.get('probleme')).toBe('Je teste le parcours')
+  expect(carried.get('mode')).toBe('auto')
+})
+
+test('the home page puts the problem input in front of the visitor', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await expect(page.getByLabel('Ta problématique')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Démarrer' })).toBeVisible()
 })
 
 test('an unknown page shows the not-found state', async ({ page }) => {

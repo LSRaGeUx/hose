@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { z } from 'zod'
 
 import { Alert, AlertDescription } from '#/components/ui/alert'
 import { Button } from '#/components/ui/button'
@@ -12,14 +13,21 @@ import {
 } from '#/lib/ai/server'
 import { saveRun } from '#/lib/problems'
 import { Conversation } from '#/components/reflexion/conversation'
-import { ModePicker } from '#/components/reflexion/mode-picker'
+import { StartForm } from '#/components/reflexion/start-form'
 import { Verbs } from '#/components/reflexion/verbs'
 
 import type { Exchange, Mode, Status, Verb } from '#/components/reflexion/types'
 
 const WHY_COUNT = 5
 
+const searchSchema = z.object({
+  /** Carried from the home page so the run starts without retyping. */
+  probleme: z.string().trim().min(1).max(500).optional(),
+  mode: z.enum(['auto', 'assist']).optional(),
+})
+
 export const Route = createFileRoute('/_authed/reflexion')({
+  validateSearch: searchSchema,
   component: Reflexion,
 })
 
@@ -36,8 +44,9 @@ function errorMessage(error: unknown): string {
 }
 
 function Reflexion() {
-  const [title, setTitle] = useState('')
-  const [mode, setMode] = useState<Mode>('assist')
+  const search = Route.useSearch()
+  const [title, setTitle] = useState(search.probleme ?? '')
+  const [mode, setMode] = useState<Mode>(search.mode ?? 'assist')
   const [status, setStatus] = useState<Status>({ kind: 'setup' })
   const [exchanges, setExchanges] = useState<Array<Exchange>>([])
   const [verbs, setVerbs] = useState<Array<Verb>>([])
@@ -46,10 +55,14 @@ function Reflexion() {
 
   const problem = title.trim()
 
-  async function runSynthesis(complete: Array<Exchange>) {
+  async function runSynthesis(
+    complete: Array<Exchange>,
+    explicitTitle?: string,
+  ) {
+    const subject = (explicitTitle ?? title).trim()
     setStatus({ kind: 'synthesizing' })
     const { verbs: result } = await synthesizeVerbs({
-      data: { title: problem, exchanges: complete },
+      data: { title: subject, exchanges: complete },
     })
     setVerbs(result)
 
@@ -58,7 +71,7 @@ function Reflexion() {
     setStatus({ kind: 'saving' })
     const { problemId } = await saveRun({
       data: {
-        title: problem,
+        title: subject,
         exchanges: complete.map((e) => ({
           question: e.question,
           answer: e.answer ?? '',
@@ -70,8 +83,10 @@ function Reflexion() {
     setStatus({ kind: 'done' })
   }
 
-  async function start(chosen: Mode) {
-    if (!problem) return
+  async function start(chosen: Mode, explicitTitle?: string) {
+    const subject = (explicitTitle ?? title).trim()
+    if (!subject) return
+    setTitle(subject)
     setMode(chosen)
     setStatus({ kind: 'starting' })
     setExchanges([])
@@ -81,12 +96,12 @@ function Reflexion() {
     try {
       if (chosen === 'auto') {
         const { exchanges: chain } = await generateChain({
-          data: { title: problem },
+          data: { title: subject },
         })
         setExchanges(chain)
-        await runSynthesis(chain)
+        await runSynthesis(chain, subject)
       } else {
-        const { question } = await startProblem({ data: { title: problem } })
+        const { question } = await startProblem({ data: { title: subject } })
         setExchanges([{ question, answer: null }])
         setStatus({ kind: 'waiting-for-answer' })
       }
@@ -122,6 +137,17 @@ function Reflexion() {
     }
   }
 
+  // Arriving from the home page already carries a problem, so the run begins
+  // rather than asking for it a second time. Guarded so a re-render, or coming
+  // back to this URL later, cannot start it twice.
+  const started = useRef(false)
+  useEffect(() => {
+    if (started.current) return
+    if (!search.probleme) return
+    started.current = true
+    void start(search.mode ?? 'assist', search.probleme)
+  }, [search.probleme, search.mode, start])
+
   function reset() {
     setStatus({ kind: 'setup' })
     setExchanges([])
@@ -135,7 +161,7 @@ function Reflexion() {
       <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-16">
         <div className="flex flex-col gap-3">
           <h1 className="text-3xl font-semibold tracking-tight text-balance">
-            Challenge ta problématique
+            Nouvelle réflexion
           </h1>
           <p className="text-muted-foreground">
             Écris ce qui te bloque, même mal formulé. On remonte la chaîne
@@ -143,20 +169,12 @@ function Reflexion() {
           </p>
         </div>
 
-        <Textarea
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Comment améliorer le monde d'aujourd'hui ?"
-          rows={3}
-          maxLength={500}
-          aria-label="Ta problématique"
+        <StartForm
+          defaultTitle={title}
+          defaultMode={mode}
+          autoFocus
+          onStart={(value, chosen) => void start(chosen, value)}
         />
-
-        <ModePicker mode={mode} onChange={setMode} />
-
-        <Button disabled={!problem} onClick={() => start(mode)}>
-          Démarrer
-        </Button>
       </div>
     )
   }
