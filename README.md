@@ -100,7 +100,10 @@ Unit tests cover the five-whys engine against a fake client, so the suite never
 spends API tokens or waits on model latency. Playwright covers sign-up, the
 server-side guard, sign-out and the not-found state.
 
-Both run in CI against a real Postgres service.
+Unit tests run in CI against a real Postgres service. The end-to-end suite is a
+local command for now: it fails on CI's cold dev server in a way that looks
+like hydration not completing, and making it pass by loosening assertions would
+defeat the point.
 
 ## Licence
 
