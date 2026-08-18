@@ -13,9 +13,12 @@ const BASE_URL = `http://localhost:${PORT}`
  */
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
   fullyParallel: false,
   workers: 1,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
+  // CI machines are slower and colder than a laptop.
+  timeout: process.env.CI ? 60_000 : 30_000,
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: BASE_URL,

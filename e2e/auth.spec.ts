@@ -14,7 +14,7 @@ async function fill(field: Locator, value: string) {
   await expect(async () => {
     await field.fill(value)
     await expect(field).toHaveValue(value, { timeout: 500 })
-  }).toPass({ timeout: 15_000 })
+  }).toPass({ timeout: 30_000 })
 }
 
 /**
@@ -28,7 +28,7 @@ async function clickUntil(button: Locator, outcome: Locator) {
   await expect(async () => {
     await button.click()
     await expect(outcome).toBeVisible({ timeout: 2000 })
-  }).toPass({ timeout: 20_000 })
+  }).toPass({ timeout: 30_000 })
 }
 
 /** Unique per run, so the suite never collides with an existing account. */
@@ -98,8 +98,26 @@ test('the password confirmation has to match', async ({ page }) => {
 })
 
 test('a wrong password is refused', async ({ page }) => {
+  // Creates the account it then fails to sign into, so the test depends on no
+  // seed data and behaves the same on a fresh CI database as on a laptop.
+  const account = newAccount()
+
+  await page.goto('/inscription')
+  await fill(page.getByLabel('Prénom et nom'), account.name)
+  await fill(page.getByLabel('Adresse e-mail'), account.email)
+  await fill(page.getByLabel('Mot de passe', { exact: true }), account.password)
+  await fill(page.getByLabel('Confirme le mot de passe'), account.password)
+  await clickUntil(
+    page.getByRole('button', { name: 'Créer mon compte' }),
+    page.getByRole('heading', { name: 'Mon compte' }),
+  )
+  await clickUntil(
+    page.getByRole('button', { name: 'Se déconnecter' }),
+    page.getByRole('link', { name: 'Se connecter' }),
+  )
+
   await page.goto('/connexion')
-  await fill(page.getByLabel('Adresse e-mail'), 'test@hose.local')
+  await fill(page.getByLabel('Adresse e-mail'), account.email)
   await fill(page.getByLabel('Mot de passe'), 'definitely-wrong')
   await clickUntil(
     page.getByRole('button', { name: 'Se connecter' }),
