@@ -20,6 +20,8 @@ export type ProblemSummary = {
   answeredCount: number
   totalCount: number
   verbs: Array<{ label: string; solution: string }>
+  committedVerb: string | null
+  commitment: string | null
 }
 
 /**
@@ -63,6 +65,8 @@ export const fetchMyProblems = createServerFn({ method: 'GET' }).handler(
         label: v.verb.label,
         solution: v.solution,
       })),
+      committedVerb: row.committedVerb,
+      commitment: row.commitment,
     }))
   },
 )
@@ -75,6 +79,8 @@ const saveRunSchema = z.object({
   verbs: z
     .array(z.object({ verb: z.string().min(1), solution: z.string().min(1) }))
     .length(3),
+  committedVerb: z.string().trim().min(1).max(80).nullable(),
+  commitment: z.string().trim().min(1).max(400).nullable(),
 })
 
 /**
@@ -97,7 +103,12 @@ export const saveRun = createServerFn({ method: 'POST' })
     return db.transaction(async (tx) => {
       const [problem] = await tx
         .insert(problems)
-        .values({ userId, title: data.title })
+        .values({
+          userId,
+          title: data.title,
+          committedVerb: data.committedVerb,
+          commitment: data.commitment,
+        })
         .returning()
 
       await tx.insert(exchangesTable).values(

@@ -21,7 +21,13 @@ function Board() {
   // opens containing the person's own reasoning rather than an empty canvas.
   const graph: BoardGraph =
     board.data ??
-    seedGraph(board.title, board.exchanges, board.verbs, board.frame)
+    seedGraph(
+      board.title,
+      board.exchanges,
+      board.verbs,
+      board.frame,
+      board.commitment,
+    )
 
   const onSave = useCallback(
     async (next: BoardGraph) => {

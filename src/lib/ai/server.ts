@@ -8,6 +8,7 @@ import { getAnthropic } from './client.ts'
 import {
   askFirstQuestion,
   askNextQuestion,
+  commitToAction,
   continueChain,
   runFullChain,
   synthesize,
@@ -110,4 +111,25 @@ export const synthesizeVerbs = createServerFn({ method: 'POST' })
         frame,
       ),
     }
+  })
+
+/** Turns the verb the person picked into one small, dated first step. */
+export const proposeCommitment = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({
+      title: titleSchema,
+      verb: z.string().trim().min(1).max(80),
+      solution: z.string().trim().min(1).max(400),
+    }),
+  )
+  .handler(async ({ data }) => {
+    await requireUser()
+    const frame = await fetchFrame()
+    return commitToAction(
+      getAnthropic(),
+      data.title,
+      data.verb,
+      data.solution,
+      frame,
+    )
   })

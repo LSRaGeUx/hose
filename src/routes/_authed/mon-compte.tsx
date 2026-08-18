@@ -143,6 +143,18 @@ function ProblemCard({ problem }: { problem: ProblemSummary }) {
         </Button>
       </CardContent>
 
+      {problem.commitment ? (
+        <CardContent className="pt-0">
+          <div className="border-signal bg-signal-wash flex flex-col gap-1 border-l-2 px-4 py-3">
+            <p className="label-technical text-signal">
+              Engagement
+              {problem.committedVerb ? ` · ${problem.committedVerb}` : ''}
+            </p>
+            <p className="text-sm leading-snug">{problem.commitment}</p>
+          </div>
+        </CardContent>
+      ) : null}
+
       {problem.verbs.length > 0 ? (
         <CardContent>
           <ol className="flex flex-col gap-3">

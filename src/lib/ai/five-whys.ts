@@ -4,12 +4,14 @@ import { MODEL } from './model.ts'
 import {
   chainSchema,
   chainSchemaOf,
+  commitmentSchema,
   questionSchema,
   synthesisSchema,
   VERB_COUNT,
   WHY_COUNT,
 } from './schemas.ts'
 import {
+  commitmentPrompt,
   continueChainPrompt,
   firstQuestionPrompt,
   fullChainPrompt,
@@ -22,7 +24,7 @@ import { EMPTY_FRAME } from './frame.ts'
 import type Anthropic from '@anthropic-ai/sdk'
 import type { PersonalFrame } from './frame.ts'
 import type { z } from 'zod'
-import type { Chain, Exchange, Synthesis } from './schemas.ts'
+import type { Chain, Commitment, Exchange, Synthesis } from './schemas.ts'
 
 /** The model declined the request. Carries the category when one is given. */
 export class RefusedError extends Error {
@@ -192,4 +194,25 @@ export async function synthesize(
   if (unique.size !== VERB_COUNT) throw new MalformedError()
 
   return verbs
+}
+
+/**
+ * The step that turns a verb into something that will actually happen.
+ */
+export async function commitToAction(
+  client: Anthropic,
+  title: string,
+  verb: string,
+  solution: string,
+  frame: PersonalFrame = EMPTY_FRAME,
+): Promise<Commitment> {
+  const { system, user } = commitmentPrompt(title, verb, solution, frame)
+  const out = await ask(client, {
+    system,
+    user,
+    schema: commitmentSchema,
+    effort: 'medium',
+    maxTokens: 1500,
+  })
+  return { action: out.action.trim(), when: out.when.trim() }
 }

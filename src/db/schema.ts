@@ -60,6 +60,10 @@ export const problems = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
+    /** The verb the person chose to actually act on, if they got that far. */
+    committedVerb: text('committed_verb'),
+    /** The one concrete thing they said they would do. */
+    commitment: text('commitment'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (t) => [index('problems_user_id_idx').on(t.userId, t.createdAt)],

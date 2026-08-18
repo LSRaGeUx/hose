@@ -13,6 +13,7 @@ import {
   synthesizeVerbs,
 } from '#/lib/ai/server'
 import { saveRun } from '#/lib/problems'
+import { Commitment } from '#/components/reflexion/commitment'
 import { Conversation } from '#/components/reflexion/conversation'
 import { StartForm } from '#/components/reflexion/start-form'
 import { Verbs } from '#/components/reflexion/verbs'
@@ -66,22 +67,39 @@ function Reflexion() {
       data: { title: subject, exchanges: complete },
     })
     setVerbs(result)
-
-    // Persisted only once the run is actually complete, in a single
-    // transaction, so a half-finished chain never reaches the database.
-    setStatus({ kind: 'saving' })
-    const { problemId } = await saveRun({
-      data: {
-        title: subject,
-        exchanges: complete.map((e) => ({
-          question: e.question,
-          answer: e.answer ?? '',
-        })),
-        verbs: result,
-      },
-    })
-    setSavedId(problemId)
     setStatus({ kind: 'done' })
+  }
+
+  /**
+   * Persists the run, with the commitment when there is one.
+   *
+   * Saving waits for this rather than firing the moment the verbs appear, so a
+   * problem and the thing the person decided to do about it land together in
+   * one transaction.
+   */
+  async function persist(
+    committedVerb: string | null,
+    commitment: string | null,
+  ) {
+    setStatus({ kind: 'saving' })
+    try {
+      const { problemId } = await saveRun({
+        data: {
+          title: problem,
+          exchanges: exchanges.map((e) => ({
+            question: e.question,
+            answer: e.answer ?? '',
+          })),
+          verbs,
+          committedVerb,
+          commitment,
+        },
+      })
+      setSavedId(problemId)
+      setStatus({ kind: 'done' })
+    } catch (error) {
+      setStatus({ kind: 'error', message: errorMessage(error) })
+    }
   }
 
   async function start(chosen: Mode, explicitTitle?: string) {
@@ -298,6 +316,23 @@ function Reflexion() {
       ) : null}
 
       {verbs.length > 0 ? <Verbs verbs={verbs} /> : null}
+
+      {verbs.length > 0 && !savedId && status.kind !== 'saving' ? (
+        <>
+          <Commitment
+            title={problem}
+            verbs={verbs}
+            onCommit={(verb, action) => void persist(verb, action)}
+          />
+          <button
+            type="button"
+            onClick={() => void persist(null, null)}
+            className="label-technical hover:text-signal self-start"
+          >
+            Enregistrer sans m’engager
+          </button>
+        </>
+      ) : null}
 
       {status.kind === 'done' && savedId ? (
         <p className="text-muted-foreground text-sm">

@@ -35,6 +35,7 @@ export type BoardPayload = {
   /** null when the board has never been arranged, so the caller seeds it. */
   data: BoardGraph | null
   frame: PersonalFrame
+  commitment: string | null
 }
 
 async function requireUserId(): Promise<string> {
@@ -77,6 +78,7 @@ export const fetchBoard = createServerFn({ method: 'GET' })
 
     return {
       frame: await fetchFrame(),
+      commitment: problem.commitment,
       title: problem.title,
       exchanges: problem.exchanges,
       verbs: problem.verbs.map((v) => ({

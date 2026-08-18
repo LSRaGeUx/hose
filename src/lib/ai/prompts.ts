@@ -140,6 +140,36 @@ ${transcript}`,
   }
 }
 
+/**
+ * Turns a chosen verb into a first step.
+ *
+ * "Documenter" is not an action, it is a category. The gap where insight fails
+ * to become change is exactly here, so the model's job is to make the thing
+ * small, concrete and dated rather than admirable.
+ */
+export function commitmentPrompt(
+  title: string,
+  verb: string,
+  solution: string,
+  frame: PersonalFrame,
+) {
+  return {
+    system: `${VOICE}
+
+La personne a choisi un verbe d'action. Transforme-le en UNE seule première
+action, si petite qu'elle ne peut pas être repoussée : quelque chose de
+faisable en moins d'une heure, seul, sans autorisation ni réunion préalable.
+
+Elle doit être concrète : on doit pouvoir dire sans discuter si elle a été
+faite ou non. Pas d'intention, pas de « commencer à », pas de « réfléchir à ».
+Donne aussi un moment, court et réaliste.${framing(frame)}`,
+    user: `Ma problématique : ${title}
+
+Le verbe que j'ai choisi : ${verb}
+La piste proposée : ${solution}`,
+  }
+}
+
 export function synthesisPrompt(
   title: string,
   exchanges: Array<Exchange>,

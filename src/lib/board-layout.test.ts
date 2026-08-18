@@ -70,6 +70,29 @@ describe('seedGraph', () => {
     expect(nodes.filter((n) => n.type === 'frame')).toHaveLength(0)
   })
 
+  it('puts the commitment on the board as an action to tick off', () => {
+    const { nodes, edges } = seedGraph(
+      'Ma problématique',
+      EXCHANGES,
+      VERBS,
+      undefined,
+      'Écrire une page sur le module paiement (avant vendredi)',
+    )
+
+    const commitment = nodes.find((n) => n.id === 'commitment')
+    expect(commitment?.type).toBe('action')
+    expect(commitment?.data.done).toBe(false)
+    expect(commitment?.data.label).toContain('avant vendredi')
+
+    // It hangs off the verbs, so the descent ends on something to do.
+    expect(edges.filter((e) => e.target === 'commitment')).toHaveLength(3)
+  })
+
+  it('adds no action node when nothing was committed to', () => {
+    const { nodes } = seedGraph('Ma problématique', EXCHANGES, VERBS)
+    expect(nodes.find((n) => n.id === 'commitment')).toBeUndefined()
+  })
+
   it('carries the answer as node detail', () => {
     const { nodes } = seedGraph('Ma problématique', EXCHANGES, VERBS)
     const first = nodes.find((n) => n.id === 'why-1')

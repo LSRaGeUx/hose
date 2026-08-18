@@ -18,6 +18,7 @@ export function seedGraph(
   exchanges: Array<{ question: string; answer: string | null }>,
   verbs: Array<{ label: string; solution: string }>,
   frame?: PersonalFrame,
+  commitment?: string | null,
 ): BoardGraph {
   const nodes: BoardGraph['nodes'] = [
     {
@@ -85,6 +86,25 @@ export function seedGraph(
         data: { label, detail: value ?? undefined },
       })
     })
+
+  // The thing the person actually committed to, already on the board as an
+  // action rather than something they have to retype. This is the whole point
+  // of the commitment step: the plan starts here instead of at a blank canvas.
+  if (commitment) {
+    nodes.push({
+      id: 'commitment',
+      type: 'action',
+      position: { x: COLUMN_X, y: verbRow + ROW_HEIGHT + 40 },
+      data: { label: commitment, done: false },
+    })
+    verbs.forEach((_, i) => {
+      edges.push({
+        id: `e-verb-${i + 1}-commitment`,
+        source: `verb-${i + 1}`,
+        target: 'commitment',
+      })
+    })
+  }
 
   return { nodes, edges }
 }

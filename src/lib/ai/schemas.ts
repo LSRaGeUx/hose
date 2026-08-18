@@ -56,6 +56,21 @@ export const synthesisSchema = z.object({
     .length(VERB_COUNT),
 })
 
+/** One concrete first step, small enough that it will actually happen. */
+export const commitmentSchema = z.object({
+  action: z
+    .string()
+    .describe(
+      'Une seule action concrète, à la deuxième personne, commençant par un verbe.',
+    ),
+  when: z
+    .string()
+    .describe(
+      'Quand la faire, en quelques mots. Par exemple « avant vendredi ».',
+    ),
+})
+
+export type Commitment = z.infer<typeof commitmentSchema>
 export type Question = z.infer<typeof questionSchema>
 export type Chain = z.infer<typeof chainSchema>
 export type Synthesis = z.infer<typeof synthesisSchema>
