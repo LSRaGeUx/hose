@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 
 import { Alert, AlertDescription } from '#/components/ui/alert'
 import { Button } from '#/components/ui/button'
@@ -10,6 +10,7 @@ import {
   startProblem,
   synthesizeVerbs,
 } from '#/lib/ai/server'
+import { saveRun } from '#/lib/problems'
 import { Conversation } from '#/components/reflexion/conversation'
 import { ModePicker } from '#/components/reflexion/mode-picker'
 import { Verbs } from '#/components/reflexion/verbs'
@@ -41,6 +42,7 @@ function Reflexion() {
   const [exchanges, setExchanges] = useState<Array<Exchange>>([])
   const [verbs, setVerbs] = useState<Array<Verb>>([])
   const [draft, setDraft] = useState('')
+  const [savedId, setSavedId] = useState<string | null>(null)
 
   const problem = title.trim()
 
@@ -50,6 +52,21 @@ function Reflexion() {
       data: { title: problem, exchanges: complete },
     })
     setVerbs(result)
+
+    // Persisted only once the run is actually complete, in a single
+    // transaction, so a half-finished chain never reaches the database.
+    setStatus({ kind: 'saving' })
+    const { problemId } = await saveRun({
+      data: {
+        title: problem,
+        exchanges: complete.map((e) => ({
+          question: e.question,
+          answer: e.answer ?? '',
+        })),
+        verbs: result,
+      },
+    })
+    setSavedId(problemId)
     setStatus({ kind: 'done' })
   }
 
@@ -59,6 +76,7 @@ function Reflexion() {
     setStatus({ kind: 'starting' })
     setExchanges([])
     setVerbs([])
+    setSavedId(null)
 
     try {
       if (chosen === 'auto') {
@@ -109,6 +127,7 @@ function Reflexion() {
     setExchanges([])
     setVerbs([])
     setDraft('')
+    setSavedId(null)
   }
 
   if (status.kind === 'setup') {
@@ -176,6 +195,16 @@ function Reflexion() {
       ) : null}
 
       {verbs.length > 0 ? <Verbs verbs={verbs} /> : null}
+
+      {status.kind === 'done' && savedId ? (
+        <p className="text-muted-foreground text-sm">
+          Cette réflexion est enregistrée dans{' '}
+          <Link to="/mon-compte" className="text-foreground underline">
+            tes problématiques
+          </Link>
+          .
+        </p>
+      ) : null}
 
       {status.kind === 'done' || status.kind === 'error' ? (
         <Button variant="outline" onClick={reset}>

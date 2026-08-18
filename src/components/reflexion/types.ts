@@ -22,5 +22,6 @@ export type Status =
   | { kind: 'waiting-for-answer' }
   | { kind: 'thinking' }
   | { kind: 'synthesizing' }
+  | { kind: 'saving' }
   | { kind: 'done' }
   | { kind: 'error'; message: string }

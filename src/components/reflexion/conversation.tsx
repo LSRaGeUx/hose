@@ -17,6 +17,8 @@ function pending(status: Status, mode: Mode): string | null {
       return 'Je réfléchis à la question suivante…'
     case 'synthesizing':
       return 'Je cherche tes trois verbes d’action…'
+    case 'saving':
+      return 'J’enregistre ta réflexion…'
     default:
       return null
   }

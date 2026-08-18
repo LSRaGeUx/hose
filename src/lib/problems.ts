@@ -1,9 +1,16 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { asc, desc, eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { db } from '#/db'
-import { problems } from '#/db/schema'
+import {
+  actionVerbs,
+  boards,
+  exchanges as exchangesTable,
+  problemVerbs,
+  problems,
+} from '#/db/schema'
 import { auth } from './auth.ts'
 
 export type ProblemSummary = {
@@ -59,3 +66,70 @@ export const fetchMyProblems = createServerFn({ method: 'GET' }).handler(
     }))
   },
 )
+
+const saveRunSchema = z.object({
+  title: z.string().trim().min(1).max(500),
+  exchanges: z
+    .array(z.object({ question: z.string().min(1), answer: z.string().min(1) }))
+    .length(5),
+  verbs: z
+    .array(z.object({ verb: z.string().min(1), solution: z.string().min(1) }))
+    .length(3),
+})
+
+/**
+ * Persists a completed run: the problem, its five exchanges, the three verbs
+ * with their solutions, and an empty board.
+ *
+ * All of it in one transaction, so a partial run can never be written. The
+ * 2024 backend saved these across several unrelated endpoints with no
+ * transaction, and dropped the solutions entirely.
+ */
+export const saveRun = createServerFn({ method: 'POST' })
+  .inputValidator(saveRunSchema)
+  .handler(async ({ data }): Promise<{ problemId: string }> => {
+    const session = await auth.api.getSession({
+      headers: getRequest().headers,
+    })
+    if (!session?.user) throw new Error('Authentification requise.')
+    const userId = session.user.id
+
+    return db.transaction(async (tx) => {
+      const [problem] = await tx
+        .insert(problems)
+        .values({ userId, title: data.title })
+        .returning()
+
+      await tx.insert(exchangesTable).values(
+        data.exchanges.map((e, i) => ({
+          problemId: problem.id,
+          position: i + 1,
+          question: e.question,
+          answer: e.answer,
+        })),
+      )
+
+      for (const [i, v] of data.verbs.entries()) {
+        // Verbs are shared vocabulary across every user, so reuse the row.
+        const label = v.verb.trim().toLowerCase()
+        const [verb] = await tx
+          .insert(actionVerbs)
+          .values({ label })
+          .onConflictDoUpdate({ target: actionVerbs.label, set: { label } })
+          .returning()
+
+        await tx.insert(problemVerbs).values({
+          problemId: problem.id,
+          actionVerbId: verb.id,
+          position: i + 1,
+          solution: v.solution,
+        })
+      }
+
+      await tx
+        .insert(boards)
+        .values({ problemId: problem.id, data: { nodes: [], edges: [] } })
+
+      return { problemId: problem.id }
+    })
+  })
