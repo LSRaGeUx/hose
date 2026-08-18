@@ -21,6 +21,7 @@ export type Status =
   | { kind: 'starting' }
   | { kind: 'waiting-for-answer' }
   | { kind: 'thinking' }
+  | { kind: 'rewinding' }
   | { kind: 'synthesizing' }
   | { kind: 'saving' }
   | { kind: 'done' }

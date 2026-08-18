@@ -8,6 +8,7 @@ import { getAnthropic } from './client.ts'
 import {
   askFirstQuestion,
   askNextQuestion,
+  continueChain,
   runFullChain,
   synthesize,
 } from './five-whys.ts'
@@ -35,10 +36,12 @@ async function requireUser() {
 }
 
 export const startProblem = createServerFn({ method: 'POST' })
-  .validator(z.object({ title: titleSchema }))
+  .validator(z.object({ title: titleSchema, avoid: z.string().optional() }))
   .handler(async ({ data }) => {
     await requireUser()
-    return { question: await askFirstQuestion(getAnthropic(), data.title) }
+    return {
+      question: await askFirstQuestion(getAnthropic(), data.title, data.avoid),
+    }
   })
 
 export const nextQuestion = createServerFn({ method: 'POST' })
@@ -46,12 +49,33 @@ export const nextQuestion = createServerFn({ method: 'POST' })
     z.object({
       title: titleSchema,
       exchanges: z.array(exchangeSchema).min(1).max(5),
+      avoid: z.string().optional(),
     }),
   )
   .handler(async ({ data }) => {
     await requireUser()
     return {
       question: await askNextQuestion(
+        getAnthropic(),
+        data.title,
+        data.exchanges,
+        data.avoid,
+      ),
+    }
+  })
+
+/** Rebuilds the tail of an auto-mode chain after a guess has been corrected. */
+export const resumeChain = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({
+      title: titleSchema,
+      exchanges: z.array(exchangeSchema).min(1).max(4),
+    }),
+  )
+  .handler(async ({ data }) => {
+    await requireUser()
+    return {
+      exchanges: await continueChain(
         getAnthropic(),
         data.title,
         data.exchanges,

@@ -10,22 +10,31 @@ export const questionSchema = z.object({
     .describe('La question « Pourquoi ... ? » à poser, une seule phrase.'),
 })
 
-/** The whole chain, generated unattended in auto mode. */
-export const chainSchema = z.object({
-  exchanges: z
-    .array(
-      z.object({
-        question: z.string().describe('Une question « Pourquoi ... ? ».'),
-        answer: z
-          .string()
-          .describe(
-            'La réponse plausible de la personne, à la première personne.',
-          ),
-      }),
-    )
-    .length(WHY_COUNT)
-    .describe('Les cinq échanges, du plus superficiel au plus profond.'),
+const exchangeSchema = z.object({
+  question: z.string().describe('Une question « Pourquoi ... ? ».'),
+  answer: z
+    .string()
+    .describe('La réponse plausible de la personne, à la première personne.'),
 })
+
+/**
+ * A chain of exactly `count` exchanges.
+ *
+ * Parameterised because continuing a corrected chain asks only for what is
+ * still missing, and the count has to be in the schema for the model to be
+ * held to it.
+ */
+export function chainSchemaOf(count: number) {
+  return z.object({
+    exchanges: z
+      .array(exchangeSchema)
+      .length(count)
+      .describe('Les échanges, du plus superficiel au plus profond.'),
+  })
+}
+
+/** The whole chain, generated unattended in auto mode. */
+export const chainSchema = chainSchemaOf(WHY_COUNT)
 
 /** The three action verbs and their solutions. */
 export const synthesisSchema = z.object({

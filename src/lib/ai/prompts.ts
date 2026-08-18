@@ -52,17 +52,31 @@ Ton :
 - Ne juge pas, ne propose pas de solution tant que les cinq pourquoi ne sont
   pas terminés.`
 
-export function firstQuestionPrompt(title: string) {
+/** Told what the person just rejected, so a retry is actually different. */
+function rejected(avoid?: string): string {
+  if (!avoid) return ''
+  return `
+
+La personne n'a pas retenu cette question :
+« ${avoid} »
+Pose-en une nettement différente : change d'angle, ne la reformule pas.`
+}
+
+export function firstQuestionPrompt(title: string, avoid?: string) {
   return {
     system: `${VOICE}
 
 Tu poses la première question. Elle doit interroger la cause immédiate de la
-problématique, pas ses conséquences.`,
+problématique, pas ses conséquences.${rejected(avoid)}`,
     user: `Ma problématique : ${title}`,
   }
 }
 
-export function nextQuestionPrompt(title: string, exchanges: Array<Exchange>) {
+export function nextQuestionPrompt(
+  title: string,
+  exchanges: Array<Exchange>,
+  avoid?: string,
+) {
   const transcript = exchanges
     .filter((e) => e.answer !== null)
     .map((e, i) => `${i + 1}. ${e.question}\n   → ${e.answer}`)
@@ -75,7 +89,7 @@ export function nextQuestionPrompt(title: string, exchanges: Array<Exchange>) {
 
 Tu poses la question ${asked + 1} sur ${WHY_COUNT}. Appuie-toi sur la dernière
 réponse pour creuser d'un cran. Ne repose pas une question déjà posée et ne
-reformule pas la précédente.`,
+reformule pas la précédente.${rejected(avoid)}`,
     user: `Ma problématique : ${title}
 
 Échanges jusqu'ici :
@@ -92,6 +106,37 @@ Déroule seule la totalité des ${WHY_COUNT} pourquoi : pour chaque question,
 Chaque réponse doit amener la question suivante, et la chaîne doit descendre
 vers une cause de fond plutôt que tourner en rond.`,
     user: `Ma problématique : ${title}`,
+  }
+}
+
+/**
+ * Finishes a chain from a prefix the person has corrected.
+ *
+ * Auto mode guesses the answers, so its value is as a first draft. Once someone
+ * fixes one of those guesses, everything after it was reasoned from something
+ * that is no longer true and has to be redone.
+ */
+export function continueChainPrompt(
+  title: string,
+  exchanges: Array<Exchange>,
+  remaining: number,
+) {
+  const transcript = exchanges
+    .map((e, i) => `${i + 1}. ${e.question}\n   → ${e.answer ?? ''}`)
+    .join('\n')
+
+  return {
+    system: `${VOICE}
+
+Les ${exchanges.length} premiers échanges sont acquis, la personne les a
+validés ou corrigés. Écris les ${remaining} suivants pour compléter les
+${WHY_COUNT} pourquoi : pour chaque question, écris aussi la réponse qu'elle
+donnerait, à la première personne. Repars de sa dernière réponse telle qu'elle
+est maintenant, pas de ce que tu avais imaginé avant.`,
+    user: `Ma problématique : ${title}
+
+Échanges acquis :
+${transcript}`,
   }
 }
 

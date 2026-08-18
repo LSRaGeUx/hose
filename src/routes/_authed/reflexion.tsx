@@ -8,6 +8,7 @@ import { Textarea } from '#/components/ui/textarea'
 import {
   generateChain,
   nextQuestion,
+  resumeChain,
   startProblem,
   synthesizeVerbs,
 } from '#/lib/ai/server'
@@ -148,6 +149,84 @@ function Reflexion() {
     void start(search.mode ?? 'assist', search.probleme)
   }, [search.probleme, search.mode, start])
 
+  /**
+   * Swaps the question currently waiting for an answer.
+   *
+   * A misread question is not a small problem: every later question is
+   * reasoned from it, so one bad step quietly wastes the remaining four.
+   */
+  async function regenerate() {
+    const pendingIndex = exchanges.length - 1
+    if (pendingIndex < 0) return
+    const current = exchanges[pendingIndex]
+    if (current.answer !== null) return
+
+    const answered = exchanges.slice(0, pendingIndex)
+    setStatus({ kind: 'thinking' })
+    try {
+      const { question } =
+        answered.length === 0
+          ? await startProblem({
+              data: { title: problem, avoid: current.question },
+            })
+          : await nextQuestion({
+              data: {
+                title: problem,
+                exchanges: answered,
+                avoid: current.question,
+              },
+            })
+      setExchanges([...answered, { question, answer: null }])
+      setStatus({ kind: 'waiting-for-answer' })
+    } catch (error) {
+      setStatus({ kind: 'error', message: errorMessage(error) })
+    }
+  }
+
+  /**
+   * Corrects an earlier answer and reasons the rest again.
+   *
+   * Everything after that point was derived from the old answer, so keeping it
+   * would leave a chain that no longer follows from itself.
+   */
+  async function editAnswer(index: number, corrected: string) {
+    const kept = exchanges
+      .slice(0, index + 1)
+      .map((e, i) => (i === index ? { ...e, answer: corrected } : e))
+
+    setExchanges(kept)
+    setVerbs([])
+    setSavedId(null)
+    setStatus({ kind: 'rewinding' })
+
+    try {
+      if (kept.length >= WHY_COUNT) {
+        await runSynthesis(kept)
+        return
+      }
+
+      // Auto mode invented the answers, so it rebuilds its own tail. Assist
+      // mode hands the next question back to the person, as it always does.
+      if (mode === 'auto') {
+        const { exchanges: rest } = await resumeChain({
+          data: { title: problem, exchanges: kept },
+        })
+        const full = [...kept, ...rest]
+        setExchanges(full)
+        await runSynthesis(full)
+        return
+      }
+
+      const { question } = await nextQuestion({
+        data: { title: problem, exchanges: kept },
+      })
+      setExchanges([...kept, { question, answer: null }])
+      setStatus({ kind: 'waiting-for-answer' })
+    } catch (error) {
+      setStatus({ kind: 'error', message: errorMessage(error) })
+    }
+  }
+
   function reset() {
     setStatus({ kind: 'setup' })
     setExchanges([])
@@ -194,7 +273,13 @@ function Reflexion() {
         </Alert>
       ) : null}
 
-      <Conversation exchanges={exchanges} status={status} mode={mode} />
+      <Conversation
+        exchanges={exchanges}
+        status={status}
+        mode={mode}
+        onRegenerate={regenerate}
+        onEditAnswer={editAnswer}
+      />
 
       {status.kind === 'waiting-for-answer' ? (
         <form onSubmit={answer} className="flex flex-col gap-3">

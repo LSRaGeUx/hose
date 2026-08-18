@@ -3,11 +3,14 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import { MODEL } from './model.ts'
 import {
   chainSchema,
+  chainSchemaOf,
   questionSchema,
   synthesisSchema,
   VERB_COUNT,
+  WHY_COUNT,
 } from './schemas.ts'
 import {
+  continueChainPrompt,
   firstQuestionPrompt,
   fullChainPrompt,
   nextQuestionPrompt,
@@ -79,8 +82,9 @@ async function ask<TSchema extends z.ZodType>(
 export async function askFirstQuestion(
   client: Anthropic,
   title: string,
+  avoid?: string,
 ): Promise<string> {
-  const { system, user } = firstQuestionPrompt(title)
+  const { system, user } = firstQuestionPrompt(title, avoid)
   const out = await ask(client, {
     system,
     user,
@@ -96,8 +100,9 @@ export async function askNextQuestion(
   client: Anthropic,
   title: string,
   exchanges: Array<Exchange>,
+  avoid?: string,
 ): Promise<string> {
-  const { system, user } = nextQuestionPrompt(title, exchanges)
+  const { system, user } = nextQuestionPrompt(title, exchanges, avoid)
   const out = await ask(client, {
     system,
     user,
@@ -121,6 +126,33 @@ export async function runFullChain(
     effort: 'medium',
     maxTokens: 4000,
   })
+  return out.exchanges.map((e) => ({
+    question: e.question.trim(),
+    answer: e.answer.trim(),
+  }))
+}
+
+/**
+ * Fills a chain back out to five from a corrected prefix. Auto mode only.
+ */
+export async function continueChain(
+  client: Anthropic,
+  title: string,
+  exchanges: Array<Exchange>,
+): Promise<Chain['exchanges']> {
+  const remaining = WHY_COUNT - exchanges.length
+  if (remaining <= 0) return []
+
+  const { system, user } = continueChainPrompt(title, exchanges, remaining)
+  const out = await ask(client, {
+    system,
+    user,
+    // Built per call: the model must return exactly what is still missing.
+    schema: chainSchemaOf(remaining),
+    effort: 'medium',
+    maxTokens: 4000,
+  })
+
   return out.exchanges.map((e) => ({
     question: e.question.trim(),
     answer: e.answer.trim(),
